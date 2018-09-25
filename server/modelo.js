@@ -43,3 +43,7 @@ function Carta(vidas,ataque,nombre,coste){
 	this.nombre=nombre;
 	this.coste=coste;
 }
+
+module.exports.Juego=Juego;
+//module.exports.Usuario=Usuario;
+//module.exports.Carta=Carta;
