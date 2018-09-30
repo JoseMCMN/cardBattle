@@ -32,9 +32,13 @@ function Usuario(nombre,juego){
 	this.juego=juego;
 	this.mazo=[];
 	this.obtenerMazo=function(){
-		//this.mazo=this.juego.obtenerColeccionInicial(numero);
+		this.mazo=this.juego.obtenerColeccionInicial(numero);
 	}
-	//this.obtenerColeccionInicial(this.numCartas);
+	this.obtenerColeccionInicial(this.numCartas)=function(){
+		for(var i=0;i<numCartas;i++){
+			this.agregarCarta;
+		}
+	}
 }
 
 function Carta(vidas,ataque,nombre,coste){
@@ -43,6 +47,12 @@ function Carta(vidas,ataque,nombre,coste){
 	this.nombre=nombre;
 	this.coste=coste;
 }
+
+/*function Mazo(numCartas){
+	for(i=0,i<numCartas,i++){
+		this.agregarCarta
+	}
+}*/
 
 module.exports.Juego=Juego;
 //module.exports.Usuario=Usuario;
