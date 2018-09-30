@@ -11,11 +11,15 @@ var juego=new Juego();
 console.log("Servidor escuchando en "+host+":"+port);
 
 //app.use(app.router);
-app.use(exp.static(__dirname + "/public"));
+//app.use(exp.static(__dirname + "/public"));
 
 app.get("/",function(request,response){
 	response.send("hola");
 });
+
+/*
+
+
 app.get("/hola/:text",function(request,response){
 	response.send("Hola "+request.params.text);
 });
@@ -38,5 +42,7 @@ app.get("/user/:id",function(request,response){
 		response.send("usuario no existe");
 	}
 	response.send
-})
+})*/
+
+console.log("Servidor escuchando en "+host+":"+port);
 app.listen(port,host);
