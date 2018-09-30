@@ -1,0 +1,22 @@
+{
+  "name": "cardBattle",
+  "version": "1.0.0",
+  "description": "This is the repository of the cardBattle Project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JoseMCMN/cardBattle.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": ""
+  },
+  "homepage": "https://github.com/JoseMCMN/cardBattle#readme",
+  "dependencies": {
+    "jasmine-node": "^1.16.2"
+  }
+}
