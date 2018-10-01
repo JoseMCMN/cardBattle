@@ -42,11 +42,5 @@ function Carta(vidas,ataque,nombre,coste){
 	this.coste=coste;
 }
 
-/*function Mazo(numCartas){
-	for(i=0,i<numCartas,i++){
-		this.agregarCarta
-	}
-}*/
-
 module.exports.Juego=Juego;
 module.exports.Usuario=Usuario;
