@@ -10,11 +10,6 @@ describe("El juego de las cartas...", function() {
   it("debería tener una colección de cartas", function() {    
     expect(juego.cartas).toBeDefined();
     expect(juego.cartas.length).toEqual(30);
-  });
-
-  it("compruebo condiciones iniciales", function(){
-    expect(usr.mazo).toBeDefined();
-    expect(usr.mazo.length).toEqual(0);
     expect(juego.usuarios).toBeDefined();
     expect(juego.usuarios.length).toEqual(0);
   });
@@ -23,6 +18,12 @@ describe("El juego de las cartas...", function() {
     expect(usr.mazo).toBeDefined();
     expect(usr.mazo.length).toEqual(0);    
   });
+
+    it("el usuario tiene una mano (inicialmente vacia)", function(){
+    expect(usr.mano).toBeDefined();
+    expect(usr.mano.length).toEqual(0);    
+  });
+
 
   it("agrego al usuario Pepe al juego", function(){
       juego.agregarUsuario(usr);

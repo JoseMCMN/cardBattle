@@ -31,15 +31,9 @@ function Usuario(nombre,juego){
 	this.nombre=nombre;
 	this.juego=juego;
 	this.mazo=[];
-	this.obtenerMazo=function(){
-		this.mazo=this.juego.obtenerColeccionInicial(numero);
-	}
-	this.obtenerColeccionInicial(this.numCartas)=function(){
-		for(var i=0;i<numCartas;i++){
-			this.agregarCarta;
-		}
-	}
+	this.mano=[];
 }
+
 
 function Carta(vidas,ataque,nombre,coste){
 	this.vidas=vidas;
@@ -55,5 +49,4 @@ function Carta(vidas,ataque,nombre,coste){
 }*/
 
 module.exports.Juego=Juego;
-//module.exports.Usuario=Usuario;
-//module.exports.Carta=Carta;
+module.exports.Usuario=Usuario;
