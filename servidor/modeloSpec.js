@@ -1,14 +1,15 @@
+var modelo = require('./modelo.js');
 describe("El juego de las cartas...", function() {
   var juego;
   var usr1,usr2;
 
   beforeEach(function() {
-    juego=new Juego();
-    usr1=new Usuario("pepe");
-    usr2=new Usuario("juan");
+    juego=new modelo.Juego();
+    usr1=new modelo.Usuario("pepe");
+    usr2=new modelo.Usuario("juan");
   });
 
-  it("Compruebo condiciones iniciales (cartas, usuario)", function() {
+   it("Compruebo condiciones iniciales (cartas, usuario)", function() {
     expect(juego.cartas).toBeDefined();
     expect(juego.cartas.length).toEqual(30);
     expect(juego.usuarios).toBeDefined();
@@ -29,14 +30,14 @@ describe("El juego de las cartas...", function() {
     expect(usr2.mano.length).toEqual(0);
     });
 
-   it("Agregar pepe el usuario al juego", function(){
+   it("agregar pepe el usuario al juego", function(){
     juego.agregarUsuario(usr1);
     expect(juego.usuarios.length).toEqual(1);
     expect(juego.usuarios[0].nombre).toEqual("pepe");
     expect(usr1.mazo.length).toEqual(30);
     });
 
-   it("Agregar pepe y juan el usuario al juego", function(){
+   it("agregar pepe y juan el usuario al juego", function(){
     juego.agregarUsuario(usr1);
     juego.agregarUsuario(usr2);
     expect(juego.usuarios.length).toEqual(2);
@@ -45,5 +46,4 @@ describe("El juego de las cartas...", function() {
     expect(juego.usuarios[1].nombre).toEqual("juan");
     expect(usr2.mazo.length).toEqual(30);
     });
-
 });

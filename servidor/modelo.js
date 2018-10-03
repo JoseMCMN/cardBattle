@@ -95,7 +95,6 @@ function Zona(nombre){
     }
 }
 
-
 function Usuario(nombre){
     this.nombre=nombre;
     this.juego=undefined;
@@ -117,7 +116,6 @@ function Usuario(nombre){
     }
 }
 
-
 function Carta(vidas,ataque,nombre,coste){
 	this.vidas=vidas;
 	this.ataque=ataque;
@@ -125,5 +123,6 @@ function Carta(vidas,ataque,nombre,coste){
 	this.coste=coste;
 }
 
-//module.exports.Juego=Juego;
-//module.exports.Usuario=Usuario;
+
+module.exports.Juego=Juego;
+module.exports.Usuario=Usuario;
