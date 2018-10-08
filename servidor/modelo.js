@@ -6,23 +6,25 @@ function Juego(){
 		this.cartas.push(carta);
 	}
 	this.agregarUsuario=function(usuario){
-		usuario.mazo=this.cartas;
+		usuario.mazo=this.crearColeccion();;
 		usuario.juego=this;
 		this.usuarios.push(usuario);
 	}
 	this.crearColeccion=function(usuario){
+		var mazo=[];
 		//10 cartas de ataque 5 coste 3 vida 5
 		for(var i=0;i<10;i++){
-			this.cartas.push(new Carta("Dragon"+i,5,5,3));
+			mazo.push(new Carta("Dragon"+i,5,5,3));
 		}
 		//10 cartas ataque 3 coste 5 vida 10
 		for(var i=0;i<10;i++){
-			this.cartas.push(new Carta("Guerrero"+i,10,3,5));
+			mazo.push(new Carta("Guerrero"+i,10,3,5));
 		}
 		//10 cartas ataque 2 coste 1 vida 2
 		for(var i=0;i<10;i++){
-			this.cartas.push(new Carta("Esbirro"+i,2,2,1));
+			mazo.push(new Carta("Esbirro"+i,2,2,1));
 		}
+		return mazo;
 	}
 	this.agregarPartida=function(partida){
 	    this.partidas.push(partida);
@@ -41,7 +43,7 @@ function Juego(){
 	}
 
 	//aqui se construye el juego
-	this.crearColeccion();
+	//this.crearColeccion();
 }
 
 function Partida(nombre){
@@ -95,6 +97,7 @@ function Zona(nombre){
     }
 }
 
+
 function Usuario(nombre){
     this.nombre=nombre;
     this.juego=undefined;
@@ -116,13 +119,13 @@ function Usuario(nombre){
     }
 }
 
+
 function Carta(vidas,ataque,nombre,coste){
 	this.vidas=vidas;
 	this.ataque=ataque;
 	this.nombre=nombre;
 	this.coste=coste;
 }
-
 
 module.exports.Juego=Juego;
 module.exports.Usuario=Usuario;

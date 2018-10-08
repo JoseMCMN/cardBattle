@@ -10,7 +10,7 @@ describe("El juego de las cartas...", function() {
 
   it("Compruebo condiciones iniciales (cartas, usuario)", function() {
     expect(juego.cartas).toBeDefined();
-    expect(juego.cartas.length).toEqual(30);
+    expect(juego.cartas.length).toEqual(0);
     expect(juego.usuarios).toBeDefined();
     expect(juego.usuarios.length).toEqual(0);
     expect(juego.partidas).toBeDefined();

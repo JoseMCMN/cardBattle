@@ -7,10 +7,14 @@
 <body>
 	<script>
 		juego=new Juego();
-		usr1=new Usuario("pepe");
-		usr2=new Usuario("juan");
-		juego.agregarUsuario(usr1);
-		juego.agregarUsuario(usr2);
+		juego.crearUsuario("pepe");
+		juego.crearUsuario("juan");
+		usr1=juego.obtenerUsuario("pepe");
+		usr2=juego.obtenerUsuario("juan");
+		//usr1=new Usuario("pepe");
+		//usr2=new Usuario("juan");
+		//juego.agregarUsuario(usr1);
+		//juego.agregarUsuario(usr2);
 		usr1.crearPartida("prueba");
 		usr2.eligePartida("prueba");
 	</script>
