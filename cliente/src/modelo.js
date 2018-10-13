@@ -75,13 +75,16 @@ function Partida(nombre){
 
 	}
 	this.cambiarTurno=function(){
-		if (this.usuariosPartida[0].turno){
-			this.usuariosPartida[0].turno=false;
-			this.usuariosPartida[1].esMiTurno();
-		}else{
-			this.usuariosPartida[1].turno=false;
-			this.usuariosPartida[0].esMiTurno();
+		for(var i=0;i<this.usuariosPartida.length;i++){
+			this.usuariosPartida[i].cambiarTurno();
 		}
+		//if (this.usuariosPartida[0].turno){
+		//	this.usuariosPartida[0].turno=false;
+		//	this.usuariosPartida[1].esMiTurno();
+		//}else{
+		//	this.usuariosPartida[1].turno=false;
+		//	this.usuariosPartida[0].esMiTurno();
+		//}
 	}
 	this.crearTablero();
 }
@@ -121,6 +124,43 @@ function Zona(nombre){
 	}
 	this.agregarMazo=function(mazo){
 		this.mazo=mazo;
+	}
+}
+
+function MiTurno(){
+	this.pasarTurno=function(usr){
+		usr.partida.cambiarTurno();
+	}
+	this.jugarCarta=function(usr,carta){
+		usr.puedeJugarCarta(carta);
+	}
+	this.cambiarTurno=function(usr){
+		usr.turno=new NoMiTurno();
+	}
+	this.meToca=function(){
+		return true;
+	}
+}
+
+function NoMiTurno(){
+	this.esMiTurno=function(usr){
+		usr.turno=new MiTurno();
+		usr.cogerCarta();
+		usr.elixir=usr.consumido+1;
+		usr.consumido=0;
+	}
+	this.pasarTurno=function(usr){
+		console.log("No se puede pasar el turno si no se tiene");
+	}
+	this.jugarCarta=function(carta,usr){
+		console.log("No es tu turno");
+	}
+	this.cambiarTurno=function(usr){
+		usr.turno=new MiTurno();
+		this.esMiTurno(usr);
+	}
+	this.meToca=function(){
+		return false;
 	}
 }
 
@@ -171,6 +211,15 @@ function Usuario(nombre){
 			this.consumido=this.consumido+carta.coste;
 		}
 	}
+	this.puedeJugarCarta=function(carta){
+		if (this.elixir>=carta.coste){
+			carta.posicion="ataque";
+			this.elixir=this.elixir-carta.coste;
+			this.consumido=this.consumido+carta.coste;
+		}
+		else
+			console.log("No tienes suficiente elixir");
+	}
 	this.ataque=function(carta,objetivo){
 		objetivo.esAtacado(carta);
 	}
@@ -187,6 +236,11 @@ function Usuario(nombre){
 		for(var i=0;i<5;i++){
 			this.cogerCarta();
 		}
+	}
+	this.localizarCarta=function(coste){
+		return this.mazo.find(function(each){
+			return each.posicion=="mano" && each.coste==coste;
+		});
 	}
 }
 
