@@ -9,7 +9,7 @@ describe("El juego de las cartas...", function() {
     juego.agregarUsuario(usr1);
     juego.agregarUsuario(usr2);
     usr1.crearPartida("prueba");
-    usr2.eligePartida("prueba");
+   	usr2.eligePartida("prueba");
   });
 
   it("Compruebo condiciones iniciales (cartas, partidas, usuario)", function() {
@@ -27,13 +27,13 @@ describe("El juego de las cartas...", function() {
     });
 
     it("Los usuarios tiene mano (inicialmente sin cartas)", function(){
-      var cont=0;
-      for(var i=0;i<usr1.mazo.length;i++){
-        if (usr1.mazo[i].posicion=="mano"){
-          cont++
-        }
-      }
-      expect(cont).toBeGreaterThanOrEqual(5);
+    	var cont=0;
+    	for(var i=0;i<usr1.mazo.length;i++){
+    		if (usr1.mazo[i].posicion=="mano"){
+    			cont++
+    		}
+    	}
+    	expect(cont).toBeGreaterThanOrEqual(5);
     });
 
    it("agregar pepe y juan el usuario al juego", function(){
@@ -47,26 +47,26 @@ describe("El juego de las cartas...", function() {
     });
 
    it("Pepe crea una partida, juan la elige y se les asigna las zonas correspondientes", function(){
-      expect(juego.usuarios[0].partida.nombre).toEqual("prueba");
-      expect(usr1.partida.nombre).toEqual("prueba");
-      expect(juego.usuarios[1].partida.nombre).toEqual("prueba");
-      expect(juego.usuarios[0].zona.nombre).toEqual("arriba");
-      expect(juego.usuarios[1].zona.nombre).toEqual("abajo");
-      expect(usr1.partida.usuariosPartida.length).toEqual(2);
-      if (usr1.turno){
-        expect(usr2.turno).toBe(false);
-      }
-      else{
-        expect(usr2.turno).toBe(true);
-      }
-    });
+	    expect(juego.usuarios[0].partida.nombre).toEqual("prueba");
+	    expect(usr1.partida.nombre).toEqual("prueba");
+	    expect(juego.usuarios[1].partida.nombre).toEqual("prueba");
+	    expect(juego.usuarios[0].zona.nombre).toEqual("arriba");
+	    expect(juego.usuarios[1].zona.nombre).toEqual("abajo");
+	    expect(usr1.partida.usuariosPartida.length).toEqual(2);
+	    if (usr1.turno.meToca()){
+	    	expect(usr2.turno.meToca()).toBe(false);
+	    }
+	    else{
+	    	expect(usr2.turno.meToca()).toBe(true);
+	    }
+  	});
 
    it("Comprobar que funciona pasar turno",function(){
-      usr1.turno=true;
-      usr2.turno=false;
-      usr1.pasarTurno();
-      expect(usr1.turno).toEqual(false);
-      expect(usr2.turno).toEqual(true);
+    	usr1.turno=new MiTurno();
+    	usr2.turno=new NoMiTurno();
+    	usr1.pasarTurno();
+    	expect(usr1.turno.meToca()).toEqual(false);
+    	expect(usr2.turno.meToca()).toEqual(true);
    });
 
    it("Al jugar una carta, la carta pasa a la zona de ataque y se decrementa el elixir en 1",function(){
@@ -82,5 +82,4 @@ describe("El juego de las cartas...", function() {
         expect(carta.posicion).toEqual("ataque");
       }
    });
-   
 });
