@@ -1,3 +1,5 @@
+var _=require("underscore");
+
 function Juego(){
 	this.cartas=[];
 	this.usuarios=[];
@@ -257,6 +259,52 @@ function Usuario(nombre){
 			return each.posicion=="mano" && each.coste==coste;
 		});
 	}
+
+	//*****************Tambien podemos obtener de este un obtener cartas que se puedan jugar********************
+	this.obtenerCartasMano=function(){
+		return this.mazo.filter(function(each){
+			return each.posicion=="mano";
+		});
+	}
+
+	this.obtenerCartasAtaque=function(){
+		return this.mazo.filter(function(each){
+			return each.posicion=="ataque";
+		});
+	}
+
+	this.ataque=function(carta,objetivo){
+		if(carta.haAtacado==false){
+			objetivo.esAtacado(carta);
+			carta.haAtacado=true;
+			this.comprobarCartasAtaque();
+		}else{
+			console.log("Esta carta ya ha atacado");
+			this.comprobarCartasAtaque();
+		}
+	}
+	this.comprobarCartasAtaque=function(){
+		var carta;
+		var cartasAtaque=this.obtenerCartasAtaque();
+		if(cartasAtaque){
+			carta= cartasAtaque.find(function(each){
+				return !each.haAtacado;
+			});
+			if (carta==undefined){
+				this.pasarTurno();
+				this.ponerNoHaAtacado();
+			}
+		}
+	}
+
+	this.ponerNoHaAtacado=function(){
+		_.each(this.obtenerCartasAtaque(),function(item){
+			item.haAtacado=false;
+		});
+	}
+
+
+	
 }
 
 function Carta(nombre,vidas,ataque,coste){

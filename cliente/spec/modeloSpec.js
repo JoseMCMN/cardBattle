@@ -171,3 +171,12 @@ it("Un turno completo con ataque", function(){
   });
 
 });
+//Test del paso de turno automático cuando elixir es 0 y no hay cartas sin jugar en la zona de ataque
+
+
+//Test del método obtenerCartasMano
+
+//Controlar que al pasar el turno sólo hay 10 cartas en la mano. Si hay más de 10, se devuelven al mazo las sobrantes
+
+//Test del control anterior
+

@@ -11,6 +11,7 @@ function Juego(){
 		usuario.mazo=_.shuffle(this.crearColeccion());
 		usuario.juego=this;
 		this.usuarios.push(usuario);
+		return this.usuarios.length-1;
 	}
 	this.crearColeccion=function(){
 		var mazo=[];
