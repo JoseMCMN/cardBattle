@@ -187,14 +187,17 @@ it("Un turno completo con ataque", function(){
     });
 
     it ("Si el numero de cartas excede el maximo de capacidad al final del turno se descartan las cartas sobrantes", function(){
+      //Establecemos el turno para usr1
       usr1.turno=new MiTurno();
       usr2.turno=new NoMiTurno();
+      //Usr1 coge cartas para tener mas de 10
       for(var i=0;i<6;i++){
         usr1.cogerCarta();
       }
       var cartas=usr1.obtenerCartasMano();
       expect(cartas).toBeDefined();
       expect(cartas.length).toBeGreaterThan(10);
+      //Al pasar turno se descartan las cartas sobrantes, enviandolas al cementerio
       usr1.pasarTurno();
       expect(usr1.turno.meToca()).toEqual(false);
       expect(usr2.turno.meToca()).toEqual(true);

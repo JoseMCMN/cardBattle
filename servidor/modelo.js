@@ -80,6 +80,7 @@ function Partida(nombre){
 	this.cambiarTurno=function(){
 		for(var i=0;i<this.usuariosPartida.length;i++){
 			this.usuariosPartida[i].cambiarTurno();
+			this.usuariosPartida[i].cartasFinTurno();
 		}
 	}
 	this.quitarTurno=function(){
@@ -134,14 +135,13 @@ function Zona(nombre){
 
 function MiTurno(){
 	this.pasarTurno=function(usr){
-		usr.cartasFinTurno();
 		usr.partida.cambiarTurno();
 	}
 	this.jugarCarta=function(usr,carta){
 		usr.puedeJugarCarta(carta);
 	}
 	this.cambiarTurno=function(usr){
-		usr.turno=new NoMiTurno();
+		usr.turno=new NoMiTurno();	
 		usr.elixir=usr.consumido+1;
 		usr.consumido=0;
 	}
