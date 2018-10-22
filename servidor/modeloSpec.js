@@ -16,7 +16,7 @@ describe("El juego de las cartas...", function() {
     //usr2.eligePartida("prueba");
   });
 
-     describe("Comprobar la fase inicial del juego", function(){   
+  describe("Comprobar la fase inicial del juego", function(){   
     it("Compruebo condiciones iniciales (cartas, partidas, usuario)", function() {
           expect(juego.usuarios).toBeDefined();
           expect(juego.usuarios.length).toEqual(2);
