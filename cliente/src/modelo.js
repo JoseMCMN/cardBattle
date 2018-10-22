@@ -49,20 +49,31 @@ function Juego(){
 function Partida(nombre){
 	this.nombre=nombre;
 	this.usuariosPartida=[];
+	this.fase = new Inicial();
 	this.tablero=undefined;
 	this.crearTablero=function(){
 		this.tablero=new Tablero();
 	}
-	this.asignarUsuario=function(usuario){
-		usuario.asignarPartida(this);
-		this.usuariosPartida.push(usuario);
-		this.tablero.asignarUsuario(usuario);
-		this.comprobarInicio();
-	}
+    this.asignarUsuario = function(usuario) {
+        this.fase.asignarUsuario(usuario, this);
+    }
+    
+    this.puedeAsignarUsuario=function(usuario) {
+        usuario.asignarPartida(this);
+        this.usuariosPartida.push(usuario);
+        this.tablero.asignarUsuario(usuario);
+        this.comprobarInicio();
+    }
+
+    this.empezarPartida = function() {
+        this.fase = new Jugando();
+    }
+
 	this.comprobarInicio=function(){
 		if (this.usuariosPartida.length==2){
 			this.turnoInicial();
 			this.asignarManoInicial();
+			this.fase=new Jugando();
 		}
 	}
 	this.asignarManoInicial=function(){
@@ -78,7 +89,6 @@ function Partida(nombre){
 	this.cambiarTurno=function(){
 		for(var i=0;i<this.usuariosPartida.length;i++){
 			this.usuariosPartida[i].cambiarTurno();
-			this.usuariosPartida[i].cartasFinTurno();
 		}
 	}
 	this.quitarTurno=function(){
@@ -88,9 +98,56 @@ function Partida(nombre){
 	}
 	this.finPartida=function(){
 		console.log("La partida ha terminado");
+		this.fase = new Final();
 		this.quitarTurno();
 	}
+
 	this.crearTablero();
+}
+
+function Inicial(){
+	this.nombre="inicial";
+	this.asignarUsuario=function(usr,partida){
+		partida.puedeAsignarUsuario(usr);
+	}
+	this.usrPasaTurno=function(usuario){
+		console.log("La partida no ha comenzado");
+	}
+	this.usrAtaca=function(carta,objetivo,){
+		console.log("La partida no ha comenzado");
+	}
+	this.usrJugarCarta=function(carta,usuario){
+		console.log("La partida no ha comenzado");
+	}
+}
+
+function Jugando(){
+	this.nombre="jugando";
+	this.asignarUsuario=function(usr,partida){
+		console.log("La partida ya tiene 2 jugadores");
+	}
+	this.usrPasaTurno=function(usuario){
+		usuario.puedePasarTurno();
+	}	
+	this.usrJugarCarta=function(carta,usuario){
+		usuario.puedeJugarCarta(carta);
+	}
+	this.usrAtaca=function(carta,objetivo,usuario){
+		usuario.puedeAtacar(carta,objetivo);
+	}
+}
+
+function Final(){
+	this.nombre="final";
+	this.asignarUsuario=function(usr,partida){
+		console.log("La partida ha terminado");
+	}	
+	this.usrPasaTurno=function(usuario){
+		console.log("La partida ya ha terminado");
+	}
+	this.usrAtaca=function(carta,objetivo,usuario){
+		console.log("La partida ya ha terminado");
+	}
 }
 
 function Tablero(){
@@ -142,6 +199,7 @@ function MiTurno(){
 		usr.turno=new NoMiTurno();	
 		usr.elixir=usr.consumido+1;
 		usr.consumido=0;
+		usr.cartasFinTurno();
 	}
 	this.meToca=function(){
 		return true;
@@ -175,6 +233,7 @@ function NoMiTurno(){
 
 function Usuario(nombre){
 	this.nombre=nombre;
+	this.id=undefined;
 	this.juego=undefined;
 	this.vidas=20;
 	this.mazo=[];
@@ -201,7 +260,10 @@ function Usuario(nombre){
 		this.turno.cambiarTurno(this);
 	}
 	this.pasarTurno=function(){
-		//this.partida.cambiarTurno();
+		this.partida.fase.usrPasaTurno(this);
+		//this.turno.pasarTurno(this);
+	}
+	this.puedePasarTurno=function(){
 		this.turno.pasarTurno(this);
 	}
 	this.esMiTurno=function(){
@@ -219,13 +281,15 @@ function Usuario(nombre){
 		if (carta){
 			carta.posicion="mano";
 		}
-		else
-		{
+		else{
 			this.partida.finPartida();
 		}
 	}
-	this.jugarCarta=function(carta){
+	this.fasePuedeJugarCarta=function(carta){
 		this.turno.jugarCarta(this,carta);
+	}
+	this.jugarCarta=function(carta){
+		this.partida.fase.usrJugarCarta(carta,this);
 	}
 	this.puedeJugarCarta=function(carta){
 		if (this.elixir>=carta.coste){
@@ -236,7 +300,7 @@ function Usuario(nombre){
 		else
 			console.log("No tienes suficiente elixir");
 	}
-	this.ataque=function(carta,objetivo){
+	this.puedeAtacar=function(carta,objetivo){
 		if(!carta.haAtacado){
 			objetivo.esAtacado(carta);
 			carta.haAtacado=true;
@@ -245,6 +309,9 @@ function Usuario(nombre){
 			console.log("Esta carta ya ha atacado");
 			this.comprobarCartasAtaque();
 		}
+	}
+	this.ataque=function(carta,objetivo){
+		this.partida.fase.usrAtaca(carta,objetivo,this);
 	}
 	this.esAtacado=function(carta){
 		this.vidas=this.vidas-carta.ataque;
