@@ -36,7 +36,8 @@ function Juego(){
 		var partida=new Partida(nombre);
 		this.agregarPartida(partida);
 		partida.asignarUsuario(usuario);
-		return this.partidas.length-1;
+		partida.id=this.partidas.length-1;
+		return partida.id;
 	}	
 	this.asignarPartida=function(nombre, usuario){
 		var idPartida=-1;
@@ -48,12 +49,16 @@ function Juego(){
 		}
 		return idPartida;
 	}
+	this.obtenerPartidas=function(){
+		return this.partidas;
+	}
 	//aquí se construye el Juego
 	//this.crearColeccion();
 }
 
 function Partida(nombre){
 	this.nombre=nombre;
+	this.id=undefined;
 	this.usuariosPartida=[];
 	this.fase=new Inicial();
 	this.tablero=undefined;
@@ -348,11 +353,6 @@ function Usuario(nombre){
 		return this.mazo.filter(function(each){
 			return each.posicion=="ataque";
 		});
-	}	
-	this.obtenerCartasCementerio=function(){
-		return this.mazo.filter(function(each){
-			return each.posicion=="cementerio";
-		});
 	}
 	this.comprobarCartasAtaque=function(){
 		var carta;
@@ -391,6 +391,10 @@ function Usuario(nombre){
 		carta.posicion="cementerio";
 	}
 	this.obtenerCartaMano = function(id) {
+	 	//var carta={};
+        // if ( this.mazo[id].posicion == "mano" ) {
+        //     carta=this.mazo[id];
+        // } 
         return carta=this.mazo.find(function(each){
 			return each.posicion=="mano" && each.nombre==id;
 		});	
@@ -416,6 +420,8 @@ function Carta(nombre,vidas,ataque,coste){
 		}
 	}
 }
+
+
 
 module.exports.Juego=Juego;
 module.exports.Usuario=Usuario;

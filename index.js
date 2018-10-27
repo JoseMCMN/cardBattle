@@ -31,6 +31,19 @@ app.get("/crearPartida/:usrid/:nombre",function(request,response){
 	response.send({"partidaId":partidaId});
 });
 
+app.get('/obtenerPartidas', function(request, response) {
+	var json=[];
+	var partidas=juego.obtenerPartidas();
+
+	if (partidas.length!=0){
+		for(var i=0;i<partidas.length;i++){
+			var partida=partidas[i];
+			json.push({"idPartida":partida.id,"nombre":partida.nombre});
+		}
+	}
+	response.send(json);
+});
+
 
 app.get("/elegirPartida/:usrid/:nombre",function(request,response){
 	var usrid=request.params.usrid;
@@ -72,6 +85,8 @@ app.get("/jugarCarta/:usrid/:cartaid", function(request,response) {
     	response.send({"posicion":-1});
     }
 });
+
+
 
 console.log("Servidor escuchando en "+host+":"+port);
 app.listen(port,host);
