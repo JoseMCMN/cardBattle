@@ -11,10 +11,10 @@
   Definición de la estructura de carpetas del proyecto.
   Realización del primer diseño de la arquitectura SaaS.
   Desarrollo del diseño del juego cardBattle:
-    - Definición de las entidades del juego (Juego, Usuario, Partida, Carta, Tablero, Zona)
-    - Definición de la colección de usuarios y de la colección de cartas
-    - Definición de la partida, con sus turnos (miTurno y noMiTurno), sus dos jugadores y sus fases (incial, jugando, final).
-    - Definición de las zonas de cada jugador: mano (limite de 10 cartas), mazo (30 cartas en total), zona de ataque y cementerio.
+    -Definición de las entidades del juego (Juego, Usuario, Partida, Carta, Tablero, Zona).
+    -Definición de la colección de usuarios y de la colección de cartas.
+    -Definición de la partida, con sus turnos (miTurno y noMiTurno), sus dos jugadores y sus fases (incial, jugando, final).
+    -Definición de las zonas de cada jugador: mano (limite de 10 cartas), mazo (30 cartas en total), zona de ataque y cementerio.
     
  ## Sprint 3. Implementar el API RESt y el API WebSocket de CardBattle
  
