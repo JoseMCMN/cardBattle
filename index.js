@@ -2,15 +2,25 @@ var fs=require("fs");
 var config=JSON.parse(fs.readFileSync("config.json"));
 var host=config.host;
 var port=config.port;
+var bodyParser=require("body-parser");
 var exp=require("express");
 var app=exp(); 
+var server = require('http').Server(app);
+var io = require('socket.io').listen(server);
 var modelo=require("./servidor/modelo.js");
+var comSrv=require('./servidor/comSrv.js');
+var com=new comSrv.ComSrv();
 
 var juego=new modelo.Juego();
+app.set('port', (process.env.PORT || 5000));
+app.use(exp.static(__dirname + '/'));
+app.use(bodyParser.urlencoded({extended:false}));
+app.use(bodyParser.json());
 
-app.get("/",function(request,response){
-	var json={};
-	response.send(json);
+app.get('/', function(request, response) {
+	var contenido=fs.readFileSync("./cliente/index.html"); 
+	response.setHeader("Content-type","text/html");
+	response.send(contenido); 
 });
 
 app.get("/agregarUsuario/:nombre",function(request,response){
@@ -89,4 +99,7 @@ app.get("/jugarCarta/:usrid/:cartaid", function(request,response) {
 
 
 console.log("Servidor escuchando en "+host+":"+port);
-app.listen(port,host);
+server.listen(app.get('port'), function() {
+	console.log('Node app is running on port', app.get('port'));
+});
+com.lanzarSocketSrv(io,juego);
