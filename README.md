@@ -1,6 +1,6 @@
 # cardBattle
 
-  Este repositorio contiene el proyecto de la asignatura Procesos de Ingeniería del software de la escuela superior de ingeniería informática de Albacete. Se trata de un juego de cartas online por turnos con partidas jugador contra jugador. El desarrollo del proyecto se llevará a cabo mediante Sprints usando la metodología ágil de Scrum.
+  Este repositorio contiene el proyecto de la asignatura Procesos de Ingeniería del Software de la Escuela Superior de Ingeniería Informática de Albacete. Se trata de un juego de cartas online por turnos con partidas jugador contra jugador. El desarrollo del proyecto se llevará a cabo mediante Sprints usando la metodología ágil de Scrum.
    
   ## Sprint 1. Definición del proyecto y herramientas
   
@@ -17,7 +17,7 @@
   * Definición de las zonas de cada jugador: mano (limite de 10 cartas), mazo (30 cartas en total), zona de ataque y cementerio.
 
     
- ## Sprint 3. Implementar el API RESt y el API WebSocket de CardBattle
+ ## Sprint 3. Implementar el API REST y el API WebSocket de CardBattle
  
 Se incluyen dentro del API REST:
   - Agregar Usuario
