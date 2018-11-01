@@ -44,7 +44,7 @@ function Juego(){
 		for (var i=0;i<this.partidas.length;i++){
 			if (this.partidas[i].nombre==nombre && this.partidas[i].fase.nombre=="inicial"){
 				this.partidas[i].asignarUsuario(usuario);
-				idPartida=i;
+				idPartida=i;				
 			}
 		}
 		return idPartida;
@@ -276,6 +276,9 @@ function Usuario(nombre){
 	this.puedePasarTurno=function(){
 		this.turno.pasarTurno(this);	
 	}
+	this.meToca=function(){
+		return this.turno.meToca();
+	}
 	this.esMiTurno=function(){
 		this.turno.esMiTurno(this);
 		// this.turno=true;
@@ -390,13 +393,9 @@ function Usuario(nombre){
 	this.descartarCarta=function(carta){
 		carta.posicion="cementerio";
 	}
-	this.obtenerCartaMano = function(id) {
-	 	//var carta={};
-        // if ( this.mazo[id].posicion == "mano" ) {
-        //     carta=this.mazo[id];
-        // } 
+	this.obtenerCartaMano = function(nombre){
         return carta=this.mazo.find(function(each){
-			return each.posicion=="mano" && each.nombre==id;
+			return each.posicion=="mano" && each.nombre==nombre;
 		});	
     }
 }
