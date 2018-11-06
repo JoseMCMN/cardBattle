@@ -10,7 +10,8 @@ function ClienteRest(){
 	    type:'GET',
 	    url:'/agregarUsuario/'+nombre,
 	    success:function(data){
-	      console.log("Usuario agregado con id: "+data.usr)
+	      console.log("Usuario agregado con id: "+data.usr);
+	      usr.id=data.usr;
 	      },
 	    contentType:'application/json',
 	    dataType:'json'
