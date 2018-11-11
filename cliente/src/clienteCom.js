@@ -48,6 +48,7 @@ function ClienteCom(){
 		this.socket.on('partidaCreada', function(partidaId){   						
    			console.log("Usuario crea partida con id: "+partidaId);
    			//console.log("Mano: "+mano);
+   			rest.obtenerPartidas();
 		});
 		this.socket.on('unidoAPartida', function(partidaId){   						
    			console.log("Usuario unido a partida id: "+partidaId);
