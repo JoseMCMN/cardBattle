@@ -1,25 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Bootstrap Example</title>
+  <title>CardBattle Game</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
   <script src="cliente/src/clienteCom.js"></script>
   <script src="cliente/src/clienteRest.js"></script>
-  <script src="cliente/src/clienteUsuario.js"></script>
   <script src="cliente/src/controlWeb.js"></script>
 </head>
 <body>
-
-<div class="jumbotron text-center">
-  <h1>Card Battle</h1>
-  <p>El juego de cartas</p> 
-</div>
-  
+<div class="container text-center" id="cabecera">
+  <div class="jumbotron text-center" id="granCabecera">
+    <h1>CardBattle Game</h1>
+    <p>Juego de cartas online</p> 
+  </div>
+</div> 
 <div class="container">
   <div class="row">
     <div class="col-sm-6">
@@ -30,11 +30,34 @@
     </div>
   </div>
 </div>
+<div class="container text-center">
+  <div class="row">
+    <div class="row">
+      <div id="rival">
+      </div>
+    </div>
+    <div class="row">
+      <div id="ataqueRival">
+      </div>
+    </div>  
+    <div class="row">
+      <div id="ataque">
+      </div>
+    </div>
+    <div class="row">
+      <div id="elixir">
+      </div>
+    </div>    
+    <div class="row">
+      <div id="mano">
+      </div>
+    </div>
+  </div>
+</div>
 <script>
     rest=new ClienteRest();
     com=new ClienteCom();
-    usr=new ClienteUsuario();
-    mostrarFormularioNombre();
+    comprobarUsuario();
   </script>
 </body>
 </html>

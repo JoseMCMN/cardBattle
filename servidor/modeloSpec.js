@@ -90,8 +90,8 @@ describe("El juego de las cartas...", function() {
         expect(juego.usuarios[0].partida.nombre).toEqual("prueba");
         expect(usr1.partida.nombre).toEqual("prueba");
         expect(juego.usuarios[1].partida.nombre).toEqual("prueba");
-        expect(juego.usuarios[0].zona.nombre).toEqual("arriba");
-        expect(juego.usuarios[1].zona.nombre).toEqual("abajo");
+        //expect(juego.usuarios[0].zona.nombre).toEqual("arriba");
+        //expect(juego.usuarios[1].zona.nombre).toEqual("abajo");
         expect(usr1.partida.usuariosPartida.length).toEqual(2);
         if (usr1.turno.meToca()){
           expect(usr2.turno.meToca()).toBe(false);

@@ -19,8 +19,8 @@ app.use(exp.static(__dirname + '/'));
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
 
-app.get('/', function(request, response) { 
- 	var contenido=fs.readFileSync("./cliente/index-bs.html"); 
+app.get('/', function(request, response) {
+ 	var contenido=fs.readFileSync("./cliente/index-bs.html");    
 	response.setHeader("Content-type","text/html");
 	response.send(contenido);  
 });
@@ -30,6 +30,16 @@ app.get("/agregarUsuario/:nombre",function(request,response){
 	//var usrid;
 	juego.agregarUsuario(usr1);
 	response.send({"usr":usr1.id});
+});
+
+app.get("/comprobarUsuario/:usrid",function(request,response){
+	var usrid=request.params.usrid;
+	var usr=juego.usuarios[usrid];
+	var json={"partida":undefined}
+	if (usr && usr.partida){
+		json={"partida":usr.partida.nombre};
+	}
+	response.send(json);
 });
 
 app.get("/crearPartida/:usrid/:nombre",function(request,response){

@@ -31,7 +31,7 @@ function ComSrv(){
 					if (partidaId<0){
 						console.log("usuario "+usrid+" NO se pudo unir a la partida "+nombrePartida);
 						//socket.emit("noUnido",partidaId);
-						cli.enviarRemitente("noUnido",partidaId);
+						cli.enviarRemitente(socket,"noUnido",partidaId);
 					}
 					else{
 						console.log("usuario "+usrid+" se une a la partida "+nombrePartida);
@@ -41,6 +41,17 @@ function ComSrv(){
    			        	cli.enviarRemitente(socket,"unidoAPartida",partidaId);
    			        	cli.enviarATodos(io,nombrePartida,"aJugar",partidaId);
 			     	}
+				}
+			});
+			socket.on('retomarPartida',function(usrid,nombrePartida){
+				var usr=juego.usuarios[usrid]; 
+		        var partidaId;
+				if (usr){
+					partidaId=usr.eligePartida(nombrePartida);
+					if (partidaId<0){
+						socket.join(nombrePartida);
+						cli.enviarRemitente(socket,"aJugar",partidaId);
+					}
 				}
 			});
 			socket.on("meToca",function(usrid,nombrePartida){
@@ -54,7 +65,7 @@ function ComSrv(){
 				var usr=juego.usuarios[usrid];
 				if (usr){
 					//socket.emit("mano",usr.obtenerCartasMano());
-					cli.enviarRemitente(socket,"mano",{"mano":usr.obtenerCartasMano(),"elixir":usr.elixir});
+					cli.enviarRemitente(socket,"mano",{"mano":usr.obtenerCartasMano(),"turno":usr.meToca(),"elixir":usr.elixir,"vidas":usr.vidas});
 				}
 			});
 			socket.on('obtenerCartasAtaque',function(usrid,nombrePartida){
@@ -69,19 +80,22 @@ function ComSrv(){
 				var carta;
 				if (usr){ 
 					carta=usr.obtenerCartaMano(nombreCarta);
-					usr.jugarCarta(carta);
-					if(carta.posicion=="ataque"){
-						console.log("usuario "+usrid+" juega la carta con coste: "+carta.coste);
-						//io.sockets.in(nombrePartida).emit("juegaCarta",usrid,carta,usr.elixir);
-						cli.enviarATodos(io,nombrePartida,"juegaCarta",{"usrid":usrid,"carta":carta,"elixir":usr.elixir});
-					 }
+					if (carta){
+						usr.jugarCarta(carta);
+						if(carta.posicion=="ataque"){
+							console.log("usuario "+usrid+" juega la carta con coste: "+carta.coste);
+							//io.sockets.in(nombrePartida).emit("juegaCarta",usrid,carta,usr.elixir);
+							cli.enviarATodos(io,nombrePartida,"juegaCarta",{"usrid":usrid,"carta":carta,"elixir":usr.elixir});
+						 }
+						else{
+							console.log("usuario "+usrid+" NO pudo jugar la carta con coste: "+carta.coste);
+							cli.enviarRemitente(socket,"noJugada",carta);
+						 }
+					}
 					else{
-						console.log("usuario "+usrid+" NO pudo jugar la carta con coste: "+carta.coste);
-						//sirve para enviar mensajes al cliente
-						//socket.emit("noJugada",carta);
-						cli.enviarRemitente(socket,"noJugada",carta);
-					 }
-					 //}
+						console.log("usuario "+usrid+" NO pudo jugar la carta, no existe");
+						cli.enviarRemitente(socket,"noJugada",nombreCarta);
+					}
 				} 
 			});
 			socket.on('obtenerDatosRival',function(usrid,nombrePartida){
@@ -109,9 +123,17 @@ function ComSrv(){
                 if (usr) {
                    usr.pasarTurno();
                    console.log(usr.nombre + " ha pasado el turno");
-                   cli.enviarRemitente(socket,"pasarTurno",usr.meToca());
+                   cli.enviarRemitente(socket,"pasarTurno",{"mano":usr.obtenerCartasMano(),"turno":usr.meToca(),"elixir":usr.elixir,"vidas":usr.vidas});
                    cli.enviarATodosMenosRemitente(socket,nombrePartida,"meToca",usr.rivalTeToca());
                 } 
+           	});
+           	socket.on('abandonarPartida',function(usrid,nombrePartida){
+           		var usr=juego.usuarios[usrid];
+           		if (usr){
+           			usr.abandonarPartida();
+					cli.enviarATodosMenosRemitente(socket,nombrePartida,"rivalAbandona");
+					//cli.enviarATodos(io,nombrePartida,"rivalAbandona");        			
+           		}
            	});
 		});
 	};
