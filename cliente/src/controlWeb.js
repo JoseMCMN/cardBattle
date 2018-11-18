@@ -141,7 +141,7 @@ function mostrarAtaqueRival(datos){
   for(var i=0;i<datos.length;i++){    
     cadena=cadena+'<div class="col-md-1">';
     cadena=cadena+'<div class="thumbnail">';
-    cadena=cadena+'<img src="cliente/img/'+datos[i].nombre+'.png" class="img-rounded" alt="carta" style="width:100%">';
+    cadena=cadena+'<img src="cliente/img/'+datos[i].nombre+'.png" id="'+datos[i].nombre+'" class="img-rounded" name="atacarRival" style="width:100%">';
     cadena=cadena+'<div class="col-md-1"></div>';
     cadena=cadena+'</div></div>'
   }
@@ -153,6 +153,13 @@ function mostrarAtaqueRival(datos){
   }
   cadena=cadena+'</div>';
   $('#ataqueRival').append(cadena);
+
+  $('[name="atacarRival"]').dblclick(function(){
+   var cartaObjetivo=$(this).attr("id");
+    if (cartaObjetivo!=""){
+      com.cartaObjetivo=cartaObjetivo;
+    }
+  });
 }
 
 function mostrarAtaque(datos){
@@ -167,7 +174,7 @@ function mostrarAtaque(datos){
   for(var i=0;i<datos.length;i++){   
     cadena=cadena+'<div class="col-md-1">';
     cadena=cadena+'<div class="thumbnail">';
-    cadena=cadena+'<img src="cliente/img/'+datos[i].nombre+'.png" class="img-rounded" alt="carta" style="width:100%">';
+    cadena=cadena+'<img src="cliente/img/'+datos[i].nombre+'.png" id="'+datos[i].nombre+'" class="img-rounded" name="atacante" style="width:100%">';
     cadena=cadena+'</div></div>'
   }
   for(var i=0;i<=(5-datos.length)/2;i++){
@@ -178,7 +185,23 @@ function mostrarAtaque(datos){
   }
   cadena=cadena+'</div>';
   $('#ataque').append(cadena);
-} 
+
+  /*$('[name="atacante"]').dblclick(function(){
+      console.log("ENTRA");
+      var carta=$(this).attr("id");
+      if (carta!=""){
+        console.log("Se ha seleccionado el atacante");
+        com.cartaAtacante=carta;
+      }
+  });*/
+
+  $('[name="atacante"]').dblclick(function(){
+        var carta=$(this).attr("id");
+        if (carta!=""){
+            com.atacar(carta,com.cartaObjetivo);
+        }
+  });
+}
 
 function mostrarElixir(datos){
   $('#mostrarElixir').remove();

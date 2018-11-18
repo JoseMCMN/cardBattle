@@ -1,7 +1,7 @@
 function ClienteCom(){
 	this.socket=undefined;
 	this.nombrePartida=undefined;
-	this.cartaEnemiga=undefined;
+	this.cartaObjetivo=undefined;
 	this.usrId=undefined;
 	this.ini=function(usrid){
 		this.socket=io.connect();
