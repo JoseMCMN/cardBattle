@@ -41,7 +41,7 @@ function mostrarFormularioNombre(){
   $('#inicioBtn').on('click',function(){
         var nombre=$('#nombre').val();
         if (nombre==""){
-          nombre="Loli";
+          nombre="Anonimo";
         }
         $('#formInicio').remove();
         rest.agregarUsuario(nombre);
@@ -60,7 +60,7 @@ function mostrarCrearPartida(){
   $('#inicioBtn').on('click',function(){
         var nombrePartida=$('#nombre').val();
         if (nombrePartida==""){
-          nombrePartida="prueba";
+          nombrePartida="partidaAnonima";
         }
         $('#formCrearPartida').remove();
         com.crearPartida(nombrePartida);
@@ -79,7 +79,7 @@ function mostrarCabecera(){
   $("#granCabecera").remove();
   var cadena='<div class="jumbotron text-center" id="granCabecera">';
   cadena=cadena+'<h1>BattleCards Game</h1>';
-  cadena=cadena+'<p>El juego de cartas</p></div>';
+  cadena=cadena+'<p>Juego de cartas online</p></div>';
   $("#cabecera").append(cadena);
 }
 
@@ -112,7 +112,7 @@ function mostrarListaPartidas(datos){
 function mostrarEsperandoRival(){
   limpiar();
   $('#mostrarEsperando').remove();
-  var cadena='<div id="mostrarEsperando"><h3>Esperando rival</h3>';
+  var cadena='<div id="mostrarEsperando"><h3>Esperando rival...</h3>';
   cadena=cadena+'<img id="gif" src="cliente/img/download.gif"></div>';
   $('#cabecera').append(cadena);
 }
@@ -123,7 +123,9 @@ function eliminarGif(){
 
 function mostrarRival(elixir,vidas){
   $('#mostrarRival').remove();
-  var cadena='<div id="mostrarRival"><h3>Rival - Elixir:'+elixir+' - Vidas:'+vidas+'</h3></div>';
+  var cadena='<div id="mostrarRival"><h3>Rival - Elixir:'+elixir+' - Vidas:'+vidas;
+  cadena = cadena + '<div class="thumbnail"><img src="cliente/img/rival.png" class="img-rounded" id="rival" style="width:15%;"border:none"></div>';
+  cadena= cadena+'</h3></div>';
   $('#rival').append(cadena);
 }
 
@@ -176,7 +178,7 @@ function mostrarAtaque(datos){
   }
   cadena=cadena+'</div>';
   $('#ataque').append(cadena);
-}
+} 
 
 function mostrarElixir(datos){
   $('#mostrarElixir').remove();
@@ -216,7 +218,7 @@ function mostrarMano(datos){
   $('.img-rounded').dblclick(function(){
     var nombreCarta=$(this).attr("id");
     console.log(nombreCarta);
-    //seleccionarCarta(nombreCarta);
+    seleccionarCarta(nombreCarta);
     com.jugarCarta(nombreCarta);
   });
 }
