@@ -2,27 +2,115 @@ function Juego(){
 	this.cartas=[];
 	this.usuarios=[];
 	this.partidas=[];
+	this.dao=new dao.Dao();
 	this.agregarCarta=function(carta){
 		this.cartas.push(carta);
+	}
+	this.obtenerUsuario=function(id){
+		return _.find(this.usuarios,function(usu){
+			return usu.id==id
+		});
+	}
+	this.registrarUsuario=function(email,clave,callback){
+		var ju=this;
+		var claveCifrada=cf.encrypt(clave);
+		var key=(new Date().valueOf()).toString();
+		this.dao.encontrarUsuarioCriterio({email:email},function(usr){
+			if(!usr){
+				ju.dao.insertarUsuario({email:email,clave:claveCifrada,key:key,confirmada:false},function(usu){
+	       			moduloEmail.enviarEmail(email,key,"Haz click aqui para confirmar la cuenta");         
+	                callback({email:'ok'});
+	 	        });
+	        }
+	        else{
+	        	callback({email:undefined});
+	        }
+    	});
+
+	}
+	this.confirmarUsuario=function(email,key,callback){
+		var ju=this;
+		this.dao.encontrarUsuarioCriterio({email:email,key:key,confirmada:false},function(usr){
+			if(usr){
+				usr.confirmada=true;
+				//actualizar la coleccion
+				ju.dao.modificarColeccionUsuarios(usr,function(data){
+					callback({res:"ok"});
+				});
+			}
+			else{
+				callback({res:"nook"});
+			}
+		});
+	}
+	this.enviarClave=function(email,callback){
+		var ju=this;
+		this.dao.encontrarUsuarioCriterio({email:email},function(usr){
+			if(usr){
+				var key=(new Date().valueOf()).toString();
+				usr.confirmada=false;
+				usr.key=key;
+				usr.clave=cf.encrypt('');
+				ju.dao.modificarColeccionUsuarios(usr,function(usu){
+	       			moduloEmail.enviarEmail(email,key,"Haz click aqui para confirmar la cuenta");         
+	                callback({email:'ok'});
+	 	        });
+	        }
+	        else{
+	        	callback({email:undefined});
+	        }
+    	});
+	}
+	this.loginUsuario=function(email,pass,callback){
+		var ju=this;
+		var passCifrada=cf.encrypt(pass);
+	    this.dao.encontrarUsuarioCriterio({email:email,clave:passCifrada,confirmada:true},function(usr){
+		    if (usr){
+	        	//ju.agregarUsuario(usr);   	        	
+	            callback(usr);
+	            ju.agregarUsuario(new Usuario(usr.email,usr._id));    	
+	            }
+            else{
+	            callback({'email':''});
+	        }
+	    });
 	}
 	this.agregarUsuario=function(usuario){
 		usuario.mazo=_.shuffle(this.crearColeccion());
 		usuario.juego=this;
 		this.usuarios.push(usuario);
-		usuario.id=this.usuarios.length-1;
+		//usuario.id=this.usuarios.length-1;
+	}
+	this.eliminarUsuario=function(uid,callback){
+		var json={'resultados':-1};
+		//if (ObjectID.isValid(uid)){
+			this.dao.eliminarUsuario(uid,function(result){
+	            if (result.result.n==0){
+	                console.log("No se pudo eliminar de usuarios");
+	            }
+	            else{
+	                json={"resultados":1};
+	                console.log("Usuario eliminado de usuarios");
+	                callback(json);
+	            }
+	        }); 
+		//}
+	    //else{
+	    //	callback(json);
+	    //}
 	}
 	this.crearColeccion=function(){
 		var mazo=[];
 		//10 ataque 5 coste 3 vida 5
-		for (var i=0;i<10;i++){
+		for (var i=0;i<5;i++){
 			mazo.push(new Carta("Dragon"+i, 5, 5,3));
 		}
 		//10 ataque 3 coste 2 vida 3
-		for (var i=0;i<10;i++){
+		for (var i=0;i<5;i++){
 			mazo.push(new Carta("Guerrero"+i, 3, 3,2));
 		}
 		//10 ataque 2 coste 1 vida 2
-		for (var i=0;i<10;i++){
+		for (var i=0;i<5;i++){
 			mazo.push(new Carta("Esbirro"+i, 2, 2,1));
 		}
 		return mazo;
@@ -42,7 +130,7 @@ function Juego(){
 		for (var i=0;i<this.partidas.length;i++){
 			if (this.partidas[i].nombre==nombre && this.partidas[i].fase.nombre=="inicial"){
 				this.partidas[i].asignarUsuario(usuario);
-				idPartida=i;
+				idPartida=i;				
 			}
 		}
 		return idPartida;
@@ -50,8 +138,13 @@ function Juego(){
 	this.obtenerPartidas=function(){
 		return this.partidas;
 	}
-	//aquí se construye el Juego
-	//this.crearColeccion();
+	this.eliminarPartida=function(partida){
+		//this.partida.eliminarPartida();
+		this.partidas.splice(this.partidas.indexOf(partida),1);
+	}
+	this.dao.conectar(function(db){
+		console.log("conectado a la base de datos");
+	});	
 }
 
 function Partida(nombre){
@@ -59,10 +152,10 @@ function Partida(nombre){
 	this.id=undefined;
 	this.usuariosPartida=[];
 	this.fase=new Inicial();
-	this.tablero=undefined;
-	this.crearTablero=function(){
-		this.tablero=new Tablero();
-	}
+	//this.tablero=undefined;
+	// this.crearTablero=function(){
+	// 	this.tablero=new Tablero();
+	// }
 	this.asignarUsuario=function(usuario){
 		// usuario.asignarPartida(this);
 		// this.usuariosPartida.push(usuario);
@@ -73,7 +166,7 @@ function Partida(nombre){
 	this.puedeAsignarUsuario=function(usuario){
 		usuario.asignarPartida(this);
 		this.usuariosPartida.push(usuario);
-		this.tablero.asignarUsuario(usuario);
+		//this.tablero.asignarUsuario(usuario);
 		this.comprobarInicio();
 	}
 	this.comprobarInicio=function(){
@@ -104,17 +197,22 @@ function Partida(nombre){
 			this.usuariosPartida[i].turno=new NoMiTurno();
 		}
 	}
-	this.finPartida=function(){
+	this.finPartida=function(usr){
 		console.log("La partida ha terminado");
 		this.fase=new Final();
 		this.quitarTurno();
+		//this.eliminarPartida();
+		usr.juego.eliminarPartida(this);
 	}
 	this.obtenerRival=function(usr){
 		var i=this.usuariosPartida.indexOf(usr);
 		var j=(i+1)%2;
 		return this.usuariosPartida[j];
 	}
-	this.crearTablero();
+	this.abandonarPartida=function(usr){
+		this.fase.abandonarPartida(usr,this);
+	}
+	//this.crearTablero();
 }
 
 function Inicial(){
@@ -130,6 +228,9 @@ function Inicial(){
 	}
 	this.usrJugarCarta=function(carta,usuario){
 		console.log("La partida no ha comenzado");
+	}
+	this.abandonarPartida=function(usr,partida){
+		partida.finPartida(usr);
 	}
 }
 
@@ -147,6 +248,9 @@ function Jugando(){
 	this.usrAtaca=function(carta,objetivo,usuario){
 		usuario.puedeAtacar(carta,objetivo);
 	}
+	this.abandonarPartida=function(usr,partida){
+		partida.finPartida(usr);
+	}
 }
 
 function Final(){
@@ -160,57 +264,60 @@ function Final(){
 	this.usrAtaca=function(carta,obj,usuario){
 		console.log("La partida ha terminado");
 	}
+	this.abandonarPartida=function(usr,partida){
+		console.log('No se puede abandonar un partida que ha terminado');
+	}
 }
 
 
-function Tablero(){
-	this.zonas=[];
-	this.agregarZona=function(zona){
-		this.zonas.push(zona);
-	}
-	this.crearZonas=function(){
-		this.agregarZona(new Zona("arriba"));
-		this.agregarZona(new Zona("abajo"));
-	}
-	this.asignarUsuario=function(usuario){
-		for(var i=0;i<this.zonas.length;i++){
-			if(this.zonas[i].libre){
-				usuario.agregarZona(this.zonas[i]);
-				this.zonas[i].libre=false;
-				break;
-			}
-		}
-	}
-	this.crearZonas();
-}
+// function Tablero(){
+// 	this.zonas=[];
+// 	this.agregarZona=function(zona){
+// 		this.zonas.push(zona);
+// 	}
+// 	this.crearZonas=function(){
+// 		this.agregarZona(new Zona("arriba"));
+// 		this.agregarZona(new Zona("abajo"));
+// 	}
+// 	this.asignarUsuario=function(usuario){
+// 		for(var i=0;i<this.zonas.length;i++){
+// 			if(this.zonas[i].libre){
+// 				usuario.agregarZona(this.zonas[i]);
+// 				this.zonas[i].libre=false;
+// 				break;
+// 			}
+// 		}
+// 	}
+// 	this.crearZonas();
+// }
 
-function Zona(nombre){
-	this.nombre=nombre;
-	this.ataque=[];
-	this.mano=[];
-	this.mazo=[];
-	this.libre=true;
-	this.agregarAtaque=function(carta){
-		this.ataque.push(carta);
-	}
-	this.agregarMano=function(carta){
-		this.mano.push(carta);
-	}
-	this.agregarMazo=function(mazo){
-		this.mazo=mazo;
-	}
-}
+// function Zona(nombre){
+// 	this.nombre=nombre;
+// 	this.ataque=[];
+// 	this.mano=[];
+// 	this.mazo=[];
+// 	this.libre=true;
+// 	this.agregarAtaque=function(carta){
+// 		this.ataque.push(carta);
+// 	}
+// 	this.agregarMano=function(carta){
+// 		this.mano.push(carta);
+// 	}
+// 	this.agregarMazo=function(mazo){
+// 		this.mazo=mazo;
+// 	}
+// }
 
 function MiTurno(){
 	this.pasarTurno=function(usr){
 		usr.partida.cambiarTurno();
 	}
-	this.jugarCarta=function(usr,carta){
+	this.jugarCarta=function(carta,usr){
 		usr.puedeJugarCarta(carta);
 	}
 	this.cambiarTurno=function(usr){
 		usr.turno=new NoMiTurno();
-		usr.elixir=usr.consumido+1;
+		usr.elixir=usr.elixir+usr.consumido+1;
 		usr.consumido=0;
 		usr.cartasFinTurno();
 	}
@@ -220,6 +327,9 @@ function MiTurno(){
 	this.esMiTurno=function(usr){
 		//usr.turno=new MiTurno();
 		usr.cogerCarta();
+	}
+	this.obtenerCartaMano=function(nombre,usr){
+		return usr.puedeObtenerCartaMano(nombre);
 	}
 }
 
@@ -242,11 +352,14 @@ function NoMiTurno(){
 	this.meToca=function(){
 		return false;
 	}
+	this.obtenerCartaMano=function(nombre,usr){
+		console.log("No te toca, no puedes jugar carta");
+	}
 }
 
-function Usuario(nombre){
+function Usuario(nombre,id){
 	this.nombre=nombre;
-	this.id=undefined;
+	this.id=id;
 	this.juego=undefined;
 	this.vidas=20;
 	this.mazo=[];
@@ -254,15 +367,15 @@ function Usuario(nombre){
 	//this.ataque=[];
 	this.elixir=1;
 	this.turno=new NoMiTurno();
-	this.zona=undefined;
+	//this.zona=undefined;
 	this.partida=undefined;
 	this.consumido=0;
 	this.asignarPartida=function(partida){
 		this.partida=partida;
 	}
-	this.agregarZona=function(zona){
-		this.zona=zona;
-	}
+	// this.agregarZona=function(zona){
+	// 	this.zona=zona;
+	// }
 	this.crearPartida=function(nombre){
 		return this.juego.crearPartida(nombre,this);
 	}
@@ -278,6 +391,9 @@ function Usuario(nombre){
 	}
 	this.puedePasarTurno=function(){
 		this.turno.pasarTurno(this);	
+	}
+	this.meToca=function(){
+		return this.turno.meToca();
 	}
 	this.esMiTurno=function(){
 		this.turno.esMiTurno(this);
@@ -296,11 +412,11 @@ function Usuario(nombre){
 		}
 		else
 		{
-			this.partida.finPartida();
+			this.partida.finPartida(this);
 		}
 	}
 	this.fasePuedeJugarCarta=function(carta){
-		this.turno.jugarCarta(this,carta);
+		this.turno.jugarCarta(carta,this);
 	}
 	this.jugarCarta=function(carta){
 		this.partida.fase.usrJugarCarta(carta,this);
@@ -334,7 +450,7 @@ function Usuario(nombre){
 	}
 	this.comprobarVidas=function(){
 		if (this.vidas<=0){
-			this.partida.finPartida();
+			this.partida.finPartida(this);
 		}
 	}
 	this.manoInicial=function(){
@@ -357,6 +473,11 @@ function Usuario(nombre){
 			return each.posicion=="ataque";
 		});
 	}
+	this.obtenerCartaAtaqueNombre=function(nombre){
+		return this.mazo.find(function(each){
+			return each.posicion=="ataque" && each.nombre==nombre;
+		});
+	}
 	this.comprobarCartasAtaque=function(){
 		var carta;
 		var cartasAtaque;
@@ -365,10 +486,10 @@ function Usuario(nombre){
 			carta=cartasAtaque.find(function(each){
 				return !each.haAtacado;
 			});
-			if (carta==undefined){
-				this.pasarTurno();
-				this.ponerNoHaAtacado();
-			}
+			// if (carta==undefined){
+			// 	this.pasarTurno();
+			// 	this.ponerNoHaAtacado();
+			// }
 		}
 	}
 	this.ponerNoHaAtacado=function(){
@@ -393,19 +514,43 @@ function Usuario(nombre){
 	this.descartarCarta=function(carta){
 		carta.posicion="cementerio";
 	}
-	this.obtenerCartaMano = function(nombre) {
-	 	//var carta={};
-        // if ( this.mazo[id].posicion == "mano" ) {
-        //     carta=this.mazo[id];
-        // } 
+	this.obtenerCartaMano=function(nombre){
+		return this.turno.obtenerCartaMano(nombre,this);
+	}
+	this.puedeObtenerCartaMano = function(nombre){
         return carta=this.mazo.find(function(each){
 			return each.posicion=="mano" && each.nombre==nombre;
 		});	
     }
     this.obtenerDatosRival=function(){
     	var rival=this.partida.obtenerRival(this);
-    	var json={"elixir":rival.elixir,"cartas":rival.obtenerCartasAtaque()};
+    	var json={"elixir":-1,"cartas":[],"vidas":-1};
+    	if (rival){
+    		json={"elixir":rival.elixir,"cartas":rival.obtenerCartasAtaque(),"vidas":rival.vidas,"nombre":rival.nombre};
+    	}
     	return json;
+    }
+    this.rivalTeToca=function(){
+    	var rival=this.partida.obtenerRival(this);
+    	return rival.meToca();
+    }
+    this.ataqueConNombre=function(idCarta1,idCarta2){
+    	var carta=this.obtenerCartaAtaqueNombre(idCarta1);
+    	var rival=this.partida.obtenerRival(this);
+    	var objetivo=rival.obtenerCartaAtaqueNombre(idCarta2);
+    	this.ataque(carta,objetivo);
+    	var json={"carta":carta,"objetivo":objetivo,"fase":this.partida.fase.nombre};
+    	return json;
+    }
+    this.atacarRivalConNombre=function(idCarta1){
+    	var carta=this.obtenerCartaAtaqueNombre(idCarta1);
+    	var rival=this.partida.obtenerRival(this);
+    	this.ataque(carta,rival);
+    	var json={"carta":carta,"vidas":rival.vidas,"fase":this.partida.fase.nombre};
+    	return json;
+    }
+    this.abandonarPartida=function(){
+    	this.partida.abandonarPartida(this);
     }
 }
 

@@ -15,10 +15,13 @@ function limpiar(){
 
 function comprobarUsuario(){
   if ($.cookie("usr")){
-    rest.comprobarUsuario($.cookie("usr"));
+    var usr=JSON.parse($.cookie("usr"));
+    rest.comprobarUsuario(usr._id);
   }
   else{
-    mostrarFormularioNombre();
+    //mostrarFormularioNombre();
+    mostrarLogin();
+    mostrarRegistro();
   }
 }
 function abandonarPartida(){
@@ -29,23 +32,63 @@ function abandonarPartida(){
   }
 }
 
-function mostrarFormularioNombre(){
+function mostrarLogin(){
+  //limpiar();
   var cadena='<div id="formInicio">';
-  cadena=cadena+'<h3>Iniciar sesión</h3>';
-  cadena=cadena+'<input id="nombre" type="text" class="form-control" name="nombre" placeholder="Nombre usuario">';
-  cadena=cadena+'<button type="button" id="inicioBtn" class="btn btn-primary btn-md">Iniciar Usuario</button>';
+  cadena=cadena+'<h2>Inicio de sesión</h2>';
+  cadena=cadena+'<input id="email" type="text" class="form-control" name="email" placeholder="Correo usuario">';
+  cadena=cadena+'<input id="clave" type="text" class="form-control" name="clave" placeholder="Clave usuario">';
+  cadena=cadena+'<button type="button" id="loginBtn" class="btn btn-primary btn-md">Iniciar Usuario</button>';
   cadena=cadena+'</div>';
   
   $('#inicio').append(cadena);
 
-  $('#inicioBtn').on('click',function(){
-        var nombre=$('#nombre').val();
-        if (nombre==""){
-          nombre="Anonimo";
-        }
+  $('#loginBtn').on('click',function(){
+        var email=$('#email').val();
+        var clave=$('#clave').val();
         $('#formInicio').remove();
-        rest.agregarUsuario(nombre);
+        $('#formRegistro').remove();
+        rest.loginUsuario(email,clave);
+   });
+}
+
+
+function mostrarRegistro(){
+  var cadena='<div id="formRegistro">';
+  cadena=cadena+'<h2>Registro de cuenta</h2>';
+  cadena=cadena+'<input id="email1" type="text" class="form-control" name="email1" placeholder="Escribe el email">';
+  cadena=cadena+'<input id="clave1" type="text" class="form-control" name="clave1" placeholder="Escribe la clave">';
+  cadena=cadena+'<input id="clave2" type="text" class="form-control" name="clave2" placeholder="Repite la clave">';
+  cadena=cadena+'<button type="button" id="resgistroBtn" class="btn btn-primary btn-md">Registarse</button>';
+ // cadena=cadena+'<p id="falloContRepetida" style="display:none">Las contraseñas no coinciden</p>';
+  cadena=cadena+'</div>';
+  
+  $('#inicio').append(cadena);
+
+  $('#resgistroBtn').on('click',function(){
+        var email=$('#email1').val();
+        var clave1=$('#clave1').val();
+        var clave2=$('#clave2').val();
+        if(comprobarCont(clave1,clave2)){
+          $('#formInicio').remove();
+          $('#formRegistro').remove();
+          rest.registrarUsuario(email,clave1);
+        }
+        else{
+          alert("Las contraseñas no coinciden");
+          //mostrarAviso("Las contraseñas no coinciden");
+          //$('#clave').css("border","3px solid red");
+        }
      });
+}
+
+function comprobarCont(con1,con2){
+  if (con1==con2){
+    return true;
+  }
+  else{
+    return false;
+  }
 }
 
 function mostrarCrearPartida(){
@@ -56,6 +99,7 @@ function mostrarCrearPartida(){
   cadena=cadena+'</div>';
   
   $('#inicio').append(cadena);
+  $('#formRegistro').remove();
 
   $('#inicioBtn').on('click',function(){
         var nombrePartida=$('#nombre').val();
@@ -78,9 +122,14 @@ function mostrarInicio(){
 function mostrarCabecera(){
   $("#granCabecera").remove();
   var cadena='<div class="jumbotron text-center" id="granCabecera">';
-  cadena=cadena+'<h1>BattleCards Game</h1>';
+  cadena=cadena+'<h1>CardBattle</h1>';
+  cadena=cadena+"<img src='cliente/img/ImagenMenuPrincipal.jpg' style='width:40%' class='img-circle' alt='logo'>";
   cadena=cadena+'<p>Juego de cartas online</p></div>';
   $("#cabecera").append(cadena);
+}
+
+function mostrarAviso(cadena){
+  $("#info span").text(cadena);
 }
 
 function mostrarListaPartidas(datos){
@@ -124,9 +173,15 @@ function eliminarGif(){
 function mostrarRival(elixir,vidas){
   $('#mostrarRival').remove();
   var cadena='<div id="mostrarRival"><h3>Rival - Elixir:'+elixir+' - Vidas:'+vidas;
-  cadena = cadena + '<div class="thumbnail"><img src="cliente/img/rival.png" class="img-rounded" id="rival" style="width:15%;"border:none"></div>';
-  cadena= cadena+'</h3></div>';
+  cadena=cadena + '<div class="thumbnail"><img src="cliente/img/rival.png" class="img-rounded" id="rival" style="width:15%;"border:none"></div>';
+  cadena=cadena+'</h3></div>';
+
   $('#rival').append(cadena);
+
+  $('[id=Rival]').click(function(){
+   atacarAlRival();
+  //com.jugarCarta(nombreCarta);
+  });
 }
 
 function mostrarAtaqueRival(datos){
@@ -203,6 +258,12 @@ function mostrarAtaque(datos){
   });
 }
 
+function atacarAlRival(){
+  if (usr.cartaAtaque){
+    com.atacarRival(usr.cartaAtaque);
+  }
+}
+
 function mostrarElixir(datos){
   $('#mostrarElixir').remove();
   var cadena='<div id="mostrarElixir">';
@@ -241,17 +302,36 @@ function mostrarMano(datos){
   $('.img-rounded').dblclick(function(){
     var nombreCarta=$(this).attr("id");
     console.log(nombreCarta);
-    seleccionarCarta(nombreCarta);
+    //seleccionarCarta(nombreCarta);
     com.jugarCarta(nombreCarta);
   });
 }
 
 function seleccionarCarta(nombre){
   console.log(nombre);
-  if ($('#'+nombre).css("border-top-color")=="rgb(0, 128, 0)")
-  {
-    $('#'+nombre).css("border","3px solid white");
-  }
-  else
+  if (nombre && usr.turno){
+    borrarSeleccionAtaque(usr.cartaAtaque);
+    borrarSeleccionAtaque(nombre);
     $('#'+nombre).css("border","3px solid green");
+    usr.cartaAtaque=nombre;
+  }
+}
+
+function seleccionarCartaRival(nombre){
+  console.log(nombre);
+  if (nombre && usr.turno){
+    borrarSeleccionRival(usr.cartaRival);
+    borrarSeleccionRival(nombre);
+    $('#'+nombre).css("border","3px solid green");
+    usr.cartaRival=nombre;
+  }
+}
+
+function comprobarFin(msg){
+  if(msg=="final"){
+    $('#msgFinal').modal();
+    $('#modalBtn').on('click',function(){
+      abandonarPartida();
+    });
+  }
 }

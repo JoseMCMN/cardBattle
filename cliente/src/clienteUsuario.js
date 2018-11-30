@@ -1,8 +1,6 @@
 function ClienteUsuario(nombre){
-	this.id;
 	this.nombre=nombre;
-	this.datosRival;
-	this.elixir=0;
-	this.cartasMano;
-	this.cartasAtaque=[];
+	this.turno;
+	this.cartaAtaque;
+	this.cartaRival;
 }

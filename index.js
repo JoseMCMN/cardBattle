@@ -16,7 +16,7 @@ var juego=new modelo.Juego();
 
 app.set('port', (process.env.PORT || 5000));
 app.use(exp.static(__dirname + '/'));
-app.use(bodyParser.urlencoded({extended:false}));
+app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
 
 app.get('/', function(request, response) {
@@ -25,27 +25,68 @@ app.get('/', function(request, response) {
 	response.send(contenido);  
 });
 
+app.post('/registrarUsuario', function(request,response){
+	var email=request.body.email;
+	var clave=request.body.clave;
+	if(!clave){
+		clave="";
+	}
+	juego.registrarUsuario(email,clave,function(data){
+		response.send(data);
+	});
+});
+
+app.post('/loginUsuario', function(request,response){
+	var email=request.body.email;
+	var clave=request.body.clave;
+	
+	juego.loginUsuario(email,clave,function(data){
+		response.send(data);
+	});
+});
+
+app.get("/confirmarUsuario/:email/:key",function(request,response){
+	var email=request.params.email;
+	var key=request.params.key;
+	juego.confirmarUsuario(email,key,function(data){
+		if(data.res=="ok"){
+			response.redirect("/");
+		}
+		else{
+			response.send("<h1>La cuenta ya esta activada<h1>");
+		}
+	});
+});
+
 app.get("/agregarUsuario/:nombre",function(request,response){
-	var usr1=new modelo.Usuario(request.params.nombre);
+	//var usr1=new modelo.Usuario(request.params.nombre);
 	//var usrid;
-	juego.agregarUsuario(usr1);
-	response.send({"usr":usr1.id});
+	//juego.agregarUsuario(usr1);
+	response.send({"usr":-1});
 });
 
 app.get("/comprobarUsuario/:usrid",function(request,response){
 	var usrid=request.params.usrid;
-	var usr=juego.usuarios[usrid];
+	//var usr=juego.usuarios[usrid];
+	var usr=juego.obtenerUsuario(usrid);
 	var json={"partida":undefined}
 	if (usr && usr.partida){
-		json={"partida":usr.partida.nombre};
+		json={"partida":usr.partida.nombre,"nombreUsr":usr.nombre};
 	}
 	response.send(json);
+});
+
+app.delete("/eliminarUsuario/:uid",function(request,response){
+    var uid=request.params.uid;
+    juego.eliminarUsuario(uid,function(result){
+        response.send(result);
+    });
 });
 
 app.get("/crearPartida/:usrid/:nombre",function(request,response){
 	var usrid=request.params.usrid;
 	var partida=request.params.nombre;
-	var usr=juego.usuarios[usrid];
+	var usr=juego.obtenerUsuario(usrid);
 	var partidaId=-1;
 	if (usr){
 		partidaId=usr.crearPartida(partida);
@@ -70,7 +111,7 @@ app.get('/obtenerPartidas', function(request, response) {
 app.get("/elegirPartida/:usrid/:nombre",function(request,response){
 	var usrid=request.params.usrid;
 	var partida=request.params.nombre;
-	var usr=juego.usuarios[usrid]; 
+	var usr=juego.obtenerUsuario(usrid); 
 	var partidaId=-1;
 	if (usr){
 		partidaId=usr.eligePartida(partida);
@@ -80,7 +121,7 @@ app.get("/elegirPartida/:usrid/:nombre",function(request,response){
 
 app.get("/obtenerCartasMano/:usrid",function(request,response){
 	var usrid=request.params.usrid;
-	var usr=juego.usuarios[usrid];
+	var usr=juego.obtenerUsuario(usrid);
 	var json=[];
 	if (usr){
 		var coleccion=usr.obtenerCartasMano();
@@ -96,7 +137,7 @@ app.get("/obtenerCartasMano/:usrid",function(request,response){
 app.get("/jugarCarta/:usrid/:cartaid", function(request,response) {
     var usrid   = request.params.usrid;
     var cartaid = request.params.cartaid;
-    var usr     = juego.usuarios[usrid]; //juego.obtenerUsuario(usrid)
+    var usr     = juego.obtenerUsuario(usrid); //juego.obtenerUsuario(usrid)
     if (usr){
    	    var carta   = usr.obtenerCartaMano(cartaid);
 	    usr.jugarCarta(carta);
