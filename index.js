@@ -28,9 +28,7 @@ app.get('/', function(request, response) {
 app.post('/registrarUsuario', function(request,response){
 	var email=request.body.email;
 	var clave=request.body.clave;
-	if(!clave){
-		clave="";
-	}
+	console.log("La clave desde index.js es: "+clave);
 	juego.registrarUsuario(email,clave,function(data){
 		response.send(data);
 	});
@@ -58,12 +56,21 @@ app.get("/confirmarUsuario/:email/:key",function(request,response){
 	});
 });
 
+app.get('/obtenerKeyUsuario/:email',function(request,response){
+	var email=request.params.email;
+	juego.obtenerKey(email,function(data){
+		response.send(data);
+	})
+});
+
 app.get("/agregarUsuario/:nombre",function(request,response){
 	//var usr1=new modelo.Usuario(request.params.nombre);
 	//var usrid;
 	//juego.agregarUsuario(usr1);
 	response.send({"usr":-1});
 });
+
+
 
 app.get("/comprobarUsuario/:usrid",function(request,response){
 	var usrid=request.params.usrid;
@@ -82,6 +89,12 @@ app.delete("/eliminarUsuario/:uid",function(request,response){
         response.send(result);
     });
 });
+
+app.put("/actualizarUsuario",function(request,response){
+    juego.actualizarUsuario(request.body,function(result){
+            response.send(result);
+        });
+})
 
 app.get("/crearPartida/:usrid/:nombre",function(request,response){
 	var usrid=request.params.usrid;
@@ -126,6 +139,21 @@ app.get("/obtenerCartasMano/:usrid",function(request,response){
 	if (usr){
 		var coleccion=usr.obtenerCartasMano();
 		json=usr.obtenerCartasMano();
+		// for(var i=0;i<coleccion.length;i++){
+		// 	var carta=coleccion[i];
+		// 	json.push({"idCarta":i,"vidas":carta.vidas,"ataque":carta.ataque,"coste":carta.coste});
+		// }
+	}
+	response.send(json);
+});
+
+app.get("/obtenerCartasCementerio/:usrid",function(request,response){
+	var usrid=request.params.usrid;
+	var usr=juego.obtenerUsuario(usrid);
+	var json=[];
+	if (usr){
+		var coleccion=usr.obtenerCartasCementerio();
+		json=usr.obtenerCartasCementerio();
 		// for(var i=0;i<coleccion.length;i++){
 		// 	var carta=coleccion[i];
 		// 	json.push({"idCarta":i,"vidas":carta.vidas,"ataque":carta.ataque,"coste":carta.coste});

@@ -2,6 +2,8 @@ function ClienteCom(){
 	this.socket=undefined;
 	this.nombrePartida=undefined;
 	this.cartaObjetivo=undefined;
+	this.cartaAtacante=undefined;
+	//this.zonaCementerio=undefined;
 	this.usrId=undefined;
 	this.ini=function(usrid){
 		this.socket=io.connect();
@@ -28,6 +30,9 @@ function ClienteCom(){
 	}
 	this.obtenerCartasAtaque=function(){
 		this.socket.emit("obtenerCartasAtaque",this.usrId,this.nombrePartida);
+	}
+	this.obtenerCartasCementerio=function(){
+		this.socket.emit("obtenerCartasCementerio",this.usrId,this.nombrePartida);
 	}
 	this.jugarCarta = function(nombreCarta){
 		this.socket.emit('jugarCarta',this.usrId,this.nombrePartida,nombreCarta);
@@ -84,6 +89,10 @@ function ClienteCom(){
 		this.socket.on("cartasAtaque",function(datos){
 			console.log(datos);
 			mostrarAtaque(datos.ataque);
+		});
+		this.socket.on('cartasCementerio',function(datos){
+			console.log(datos);
+			mostrarCementerio(datos.cementerio);
 		});
 		this.socket.on('datosRival',function(datos){
 			console.log(datos);

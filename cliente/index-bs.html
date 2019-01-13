@@ -14,13 +14,22 @@
   <script src="cliente/src/controlWeb.js"></script>  
   <script src="cliente/src/clienteUsuario.js"></script>
 </head>
-<body>
+<nav class="navbar navbar-inverse">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#" id="ini1" onclick="comprobarUsuario();">Card Battle Game</a>
+        </div>
+        <ul class="nav navbar-nav">
+          <li class="active"><a href="#" id="ini2" onclick="rest.obtenerResultados();">Resultados</a></li>
+          <li><a href="#" id="resul"></a> </li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right" id="inicioNav">
+        </ul>
+      </div>
+</nav>
+
 <div class="container text-center" id="cabecera">
-  <div class="jumbotron text-center" id="granCabecera">
-    <h1>CardBattle Game</h1>
-    <img src='cliente/img/ImagenMenuPrincipal.jpg' style='width:40%' class='img-circle' alt='logo'>
-    <h2>Juego de cartas online</h2> 
-  </div>
+  <body background="cliente/img/fondoMenu.png" style="background-repeat: no-repeat; background-position: top center; background-attachment: fixed;">
 </div> 
 <div class="container">
   <div class="row">
@@ -59,7 +68,7 @@
 <script>
     rest=new ClienteRest();
     com=new ClienteCom();
-    comprobarUsuario();
+    comprobarUsuario();   
   </script>
 </body>
 </html>

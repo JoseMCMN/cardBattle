@@ -4,7 +4,7 @@
   "description": "Juego basado en el popular juego de cartas Hearthstone",
   "main": "index.js",
   "scripts": {
-    "test": "node_modules/.bin/jasmine-node server"
+    "test": "jasmine-node server"
   },
   "repository": {
     "type": "git",
@@ -21,11 +21,13 @@
   },
   "homepage": "https://github.com/JoseMCMN/cardBattle#readme",
   "dependencies": {
+    "@sendgrid/mail": "^6.3.1",
     "express": "^4.16.4",
     "jasmine-node": "^1.16.2",
     "mongodb": "^3.1.10",
     "sendgrid": "^1.9.2",
     "socket.io": "^2.1.1",
     "underscore": "^1.9.1"
-  }
+  },
+  "devDependencies": {}
 }

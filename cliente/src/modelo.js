@@ -43,7 +43,7 @@ function Juego(){
 			}
 		});
 	}
-	this.enviarClave=function(email,callback){
+	this.obtenerKey=function(email,callback){
 		var ju=this;
 		this.dao.encontrarUsuarioCriterio({email:email},function(usr){
 			if(usr){
@@ -99,6 +99,29 @@ function Juego(){
 	    //	callback(json);
 	    //}
 	}
+	this.actualizarUsuario=function(nuevo,callback){
+		//this.comprobarCambios(nuevo);
+		//var usu=this;
+		var oldC=cf.encrypt(nuevo.oldpass);
+		var newC=cf.encrypt(nuevo.newpass);
+		var pers=this.dao;
+		//this.dao.conectar();
+		this.dao.encontrarUsuarioCriterio({email:nuevo.email},function(usr){
+			if(usr){
+				if (nuevo.newpass!="" && nuevo.newpass==nuevo.newpass2){
+					usr.clave=newC;
+				}
+		        pers.modificarColeccionUsuarios(usr,function(nusu){
+		               console.log("Usuario modificado");
+		               callback(usr);
+		               //ju.dao.cerrar();
+		        });
+		    }
+		    else{
+		    	callback({email:undefined});	
+		    }
+		});
+	}
 	this.crearColeccion=function(){
 		var mazo=[];
 		//10 ataque 5 coste 3 vida 5
@@ -139,7 +162,6 @@ function Juego(){
 		return this.partidas;
 	}
 	this.eliminarPartida=function(partida){
-		//this.partida.eliminarPartida();
 		this.partidas.splice(this.partidas.indexOf(partida),1);
 	}
 	this.dao.conectar(function(db){
@@ -202,6 +224,10 @@ function Partida(nombre){
 		this.fase=new Final();
 		this.quitarTurno();
 		//this.eliminarPartida();
+		for(var i=0;i<this.usuariosPartida.length;i++){
+			//this.usuariosPartida[i].partida=undefined;
+			this.usuariosPartida[i].mazo=[];
+		}
 		usr.juego.eliminarPartida(this);
 	}
 	this.obtenerRival=function(usr){
@@ -404,6 +430,7 @@ function Usuario(nombre,id){
 	}
 	this.cogerCarta=function(){
 		var carta;
+		//var partida=this.partida;
 		carta= this.mazo.find(function(each){
 			return each.posicion=="mazo";
 		});
@@ -471,6 +498,11 @@ function Usuario(nombre,id){
 	this.obtenerCartasAtaque=function(){
 		return this.mazo.filter(function(each){
 			return each.posicion=="ataque";
+		});
+	}
+	this.obtenerCartasCementerio=function(){
+		return this.mazo.filter(function(each){
+			return each.posicion=="cementerio";
 		});
 	}
 	this.obtenerCartaAtaqueNombre=function(nombre){
@@ -550,7 +582,10 @@ function Usuario(nombre,id){
     	return json;
     }
     this.abandonarPartida=function(){
-    	this.partida.abandonarPartida(this);
+    	//var rival=this.partida.obtenerRival(this);
+    	if (this.partida){    		
+    		this.partida.abandonarPartida(this);    		
+    	}
     }
 }
 
@@ -573,3 +608,10 @@ function Carta(nombre,vidas,ataque,coste){
 		}
 	}
 }
+
+
+
+module.exports.Juego=Juego;
+module.exports.Usuario=Usuario;
+module.exports.MiTurno=MiTurno;
+module.exports.NoMiTurno=NoMiTurno;

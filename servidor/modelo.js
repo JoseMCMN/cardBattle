@@ -23,8 +23,10 @@ function Juego(){
 		this.dao.encontrarUsuarioCriterio({email:email},function(usr){
 			if(!usr){
 				ju.dao.insertarUsuario({email:email,clave:claveCifrada,key:key,confirmada:false},function(usu){
-	       			moduloEmail.enviarEmail(email,key,"Haz click aqui para confirmar la cuenta");         
-	                callback({email:'ok'});
+	       			moduloEmail.enviarEmail(email,key,"Confirmar cuenta"); 
+	       			console.log("clave cifrada: "+claveCifrada);    
+	       			console.log("clave desde modelo: "+clave);        
+	                callback({email:'ok',clave:clave});
 	 	        });
 	        }
 	        else{
@@ -48,18 +50,11 @@ function Juego(){
 			}
 		});
 	}
-	this.enviarClave=function(email,callback){
+	this.obtenerKey=function(email,callback){
 		var ju=this;
-		this.dao.encontrarUsuarioCriterio({email:email},function(usr){
+		this.dao.encontrarUsuarioCriterio({email:email,confirmada:false},function(usr){
 			if(usr){
-				var key=(new Date().valueOf()).toString();
-				usr.confirmada=false;
-				usr.key=key;
-				usr.clave=cf.encrypt('');
-				ju.dao.modificarColeccionUsuarios(usr,function(usu){
-	       			moduloEmail.enviarEmail(email,key,"Haz click aqui para confirmar la cuenta");         
-	                callback({email:'ok'});
-	 	        });
+				callback({email:'ok',key:usr.key});
 	        }
 	        else{
 	        	callback({email:undefined});
@@ -104,6 +99,31 @@ function Juego(){
 	    //	callback(json);
 	    //}
 	}
+	this.actualizarUsuario=function(nuevo,callback){
+		//this.comprobarCambios(nuevo);
+		//var usu=this;
+		var oldC=cf.encrypt(nuevo.oldpass);
+		var newC=cf.encrypt(nuevo.newpass);
+		var pers=this.dao;
+		//this.dao.conectar();
+		this.dao.encontrarUsuarioCriterio({email:nuevo.email},function(usr){
+			if(usr){
+				if (nuevo.newpass!="" && nuevo.newpass==nuevo.newpass2){
+					usr.clave=newC;
+				}
+		        pers.modificarColeccionUsuarios(usr,function(nusu){
+		               console.log("Usuario modificado");
+		               console.log("Nueva clave: "+nuevo.newpass);
+		               callback(usr);
+		               //ju.dao.cerrar();
+		        });
+		    }
+		    else{
+		    	callback({email:undefined});	
+		    }
+		    //ju.dao.cerrar();
+		});
+	}
 	this.crearColeccion=function(){
 		var mazo=[];
 		//10 ataque 5 coste 3 vida 5
@@ -144,11 +164,10 @@ function Juego(){
 		return this.partidas;
 	}
 	this.eliminarPartida=function(partida){
-		//this.partida.eliminarPartida();
 		this.partidas.splice(this.partidas.indexOf(partida),1);
 	}
-	this.dao.conectar(function(db){
-		console.log("conectado a la base de datos");
+    this.dao.conectar(function(db){
+	 	console.log("conectado a la base de datos");
 	});	
 }
 
@@ -207,6 +226,10 @@ function Partida(nombre){
 		this.fase=new Final();
 		this.quitarTurno();
 		//this.eliminarPartida();
+		for(var i=0;i<this.usuariosPartida.length;i++){
+			//this.usuariosPartida[i].partida=undefined;
+			this.usuariosPartida[i].mazo=[];
+		}
 		usr.juego.eliminarPartida(this);
 	}
 	this.obtenerRival=function(usr){
@@ -324,6 +347,7 @@ function MiTurno(){
 		usr.turno=new NoMiTurno();
 		usr.elixir=usr.elixir+usr.consumido+1;
 		usr.consumido=0;
+		usr.ponerNoHaAtacado();
 		usr.cartasFinTurno();
 	}
 	this.meToca=function(){
@@ -409,6 +433,7 @@ function Usuario(nombre,id){
 	}
 	this.cogerCarta=function(){
 		var carta;
+		//var partida=this.partida;
 		carta= this.mazo.find(function(each){
 			return each.posicion=="mazo";
 		});
@@ -476,6 +501,11 @@ function Usuario(nombre,id){
 	this.obtenerCartasAtaque=function(){
 		return this.mazo.filter(function(each){
 			return each.posicion=="ataque";
+		});
+	}
+	this.obtenerCartasCementerio=function(){
+		return this.mazo.filter(function(each){
+			return each.posicion=="cementerio";
 		});
 	}
 	this.obtenerCartaAtaqueNombre=function(nombre){
@@ -555,7 +585,10 @@ function Usuario(nombre,id){
     	return json;
     }
     this.abandonarPartida=function(){
-    	this.partida.abandonarPartida(this);
+    	//var rival=this.partida.obtenerRival(this);
+    	if (this.partida){    		
+    		this.partida.abandonarPartida(this);    		
+    	}
     }
 }
 

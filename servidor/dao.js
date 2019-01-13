@@ -2,18 +2,18 @@ var mongo=require("mongodb").MongoClient;
 var ObjectID=require("mongodb").ObjectID;
 
 function Dao(){
-	//USAR ESTE CODIGO PARA LA ELABORACION DE LOS RESULTADOS, COPIANDO Y PEGANDO LOS METODOS
-	this.usuarios=undefined;
+    //USAR ESTE CODIGO PARA LA ELABORACION DE LOS RESULTADOS, COPIANDO Y PEGANDO LOS METODOS
+    this.usuarios=undefined;
 
-	this.encontrarUsuario=function(email,callback){
-		encontrar(this.usuarios,{email:email},callback);
-	};
+    this.encontrarUsuario=function(email,callback){
+        encontrar(this.usuarios,{email:email},callback);
+    };
 
-	this.encontrarUsuarioCriterio=function(criterio,callback){
-		encontrar(this.usuarios,criterio,callback);
-	};
+    this.encontrarUsuarioCriterio=function(criterio,callback){
+        encontrar(this.usuarios,criterio,callback);
+    };
 
-	function encontrar(coleccion,criterio,callback){
+    function encontrar(coleccion,criterio,callback){
         coleccion.find(criterio).toArray(function(error,usr){
             if (usr.length==0){
                 callback(undefined);
@@ -44,7 +44,7 @@ function Dao(){
         eliminar(this.usuarios,{_id:ObjectID(uid)},callback);
     }
 
-	function eliminar(coleccion,criterio,callback){
+    function eliminar(coleccion,criterio,callback){
         coleccion.remove(criterio,function(err,result){
             if(!err){
                 callback(result);
@@ -53,12 +53,12 @@ function Dao(){
     }
 
 
-	this.modificarColeccionUsuarios=function(usr,callback){
+    this.modificarColeccionUsuarios=function(usr,callback){
         modificarColeccion(this.usuarios,usr,callback);
     }
 
 
-	function modificarColeccion(coleccion,usr,callback){
+    function modificarColeccion(coleccion,usr,callback){
         coleccion.findAndModify({_id:ObjectID(usr._id)},{},usr,{},function(err,result){
             if (err){
                 console.log("No se pudo actualizar (método genérico)");
@@ -70,17 +70,17 @@ function Dao(){
         });
     }
 
-	this.conectar=function(callback){
+    this.conectar=function(callback){
         var dao=this;
-        mongo.connect("mongodb://pepe:pepepepe1@ds211774.mlab.com:11774/cardbattle",{useNewUrlParser:true}, function(err, db) {
+        mongo.connect("mongodb:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",{useNewUrlParser:true}, function(err, db) {
             if (err){
                 console.log("No pudo conectar a la base de datos");
             }
             else{
                 console.log("conectado a Mongo: usuarios");
-				//const cardbattle = database.db('cardbattle');
-				//cardbattle.collection('usuarios');
-				const cardbattle = db.db("cardbattle");
+                //const cardbattle = database.db('cardbattle');
+                //cardbattle.collection('usuarios');
+                const cardbattle = db.db("cardbattle");
                 cardbattle.collection("usuarios",function(err,col){
                     if (err){
                         console.log("No pude obtener la coleccion");
@@ -91,7 +91,7 @@ function Dao(){
                     }
                     //db.close();
                 });
-           		callback(db);
+                callback(db);
             }
         });
     }

@@ -76,6 +76,13 @@ function ComSrv(){
 					cli.enviarRemitente(socket,"cartasAtaque",{"ataque":usr.obtenerCartasAtaque()});
 				}
 			});
+			socket.on('obtenerCartasCementerio',function(usrid,nombrePartida){
+				var usr=juego.obtenerUsuario(usrid); //.usuarios[usrid];
+				if (usr){
+					//socket.emit("mano",usr.obtenerCartasMano());
+					cli.enviarRemitente(socket,"cartasCementerio",{"cementerio":usr.obtenerCartasCementerio()});
+				}
+			});
 			socket.on('jugarCarta', function(usrid,nombrePartida,nombreCarta) { 
 				var usr=juego.obtenerUsuario(usrid); //.usuarios[usrid]; 
 				var carta;
