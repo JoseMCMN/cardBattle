@@ -25,5 +25,13 @@ Se incluyen dentro del API REST:
   - Elegir Partida
   - Jugar Carta
   - Atacar
-  - Ver Resultados
   
+ ## Sprint 4. Gestión de usuarios
+ 
+  - Registro de usuarios 
+  - Confirmación de cuenta
+  - Inicio de sesión
+  - Modificar Perfil
+  - Eliminar cuenta
+  - Interfaz gráfica (cliente web)
+  - Funcionalidad extra (cementerio)
