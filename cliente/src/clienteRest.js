@@ -1,6 +1,12 @@
 function ClienteRest(){
-	this.obtenerPartidas=function(){
+	/*this.obtenerPartidas=function(){
 		$.getJSON("/obtenerPartidas",function(data){    
+    		console.log(data);
+    		mostrarListaPartidas(data);
+		});
+	}*/
+	this.obtenerPartidas=function(usrid){
+		$.getJSON("/obtenerPartidas/"+usrid,function(data){    
     		console.log(data);
     		mostrarListaPartidas(data);
 		});
@@ -17,9 +23,13 @@ function ClienteRest(){
 	    		//mostrarNavLogin();
 	    	}
 	    	else{
+	    		//PENDIENTE
 	    		$.removeCookie("usr");
 	    		mostrarNavLogin();
 	    		mostrarCabecera();
+	    		//com.ini(usrid);
+	    		//mostrarMenu();
+	    		//mostrarNavLogout();
 	    	}
 		});	
 	}
@@ -86,7 +96,13 @@ function ClienteRest(){
 		      	com.ini(data._id);
 		      	//mostrarCrearPartida();
 		      	//cli.obtenerPartidas();
-				mostrarCrearElegirPartida();
+		      	mostrarMenu();
+		      	mostrarNavLogout();
+				//mostrarCrearElegirPartida();
+				console.log(data._id);
+				//mostrarCrearPartida();
+				//cli.obtenerPartidas(data._id);
+
 
 		    	}
 		    },
@@ -94,6 +110,10 @@ function ClienteRest(){
 		    dataType:'json'
 	  });
 	}
+
+
+
+
 	this.obtenerKey=function(email){
 	  if (!email || email==""){
 	    mostrarLogin();

@@ -1,9 +1,21 @@
 function ClienteCom(){
 	this.socket=undefined;
 	this.nombrePartida=undefined;
+	//Para invocaciones
 	this.cartaObjetivo=undefined;
 	this.cartaAtacante=undefined;
+	//Para hechizos
+	this.cartaOrigen=undefined;
+	this.cartaDestino=undefined;
+	this.destinoCartaRival=undefined;
+	this.rivalObjetivo=undefined;
 	//this.zonaCementerio=undefined;
+	//Para gritos de batalla
+	this.tieneObjetivosG=undefined;
+	this.cartaOrigenGrito=undefined;
+	this.cartaDestinoGrito=undefined;
+	this.cementerioMostrado=false;
+	
 	this.usrId=undefined;
 	this.ini=function(usrid){
 		this.socket=io.connect();
@@ -15,9 +27,25 @@ function ClienteCom(){
 		this.socket.emit('crearPartida', this.usrId,nombre);
    			console.log("usuario "+this.usrId+" crea partida "+nombre);
 	}
+	this.buscarPartida=function(){
+		this.socket.emit('buscarPartida', this.usrId);
+   			console.log("usuario "+this.usrId+" busca partida");
+	}
 	this.elegirPartida = function(nombre){	
 		this.nombrePartida=nombre;	
     	this.socket.emit('elegirPartida',this.usrId,nombre);
+	};
+	this.elegirMazoFuego = function(variante){		
+    	this.socket.emit('elegirMazoFuego',this.usrId,variante);
+	};
+	this.elegirMazoAgua = function(variante){		
+    	this.socket.emit('elegirMazoAgua',this.usrId,variante);
+	};
+	this.elegirMazoTierra = function(variante){		
+    	this.socket.emit('elegirMazoTierra',this.usrId,variante);
+	};
+	this.elegirMazoAire = function(variante){		
+    	this.socket.emit('elegirMazoAire',this.usrId,variante);
 	};
 	this.retomarPartida=function(){
 		this.socket.emit("retomarPartida",this.usrId,this.nombrePartida);
@@ -37,6 +65,38 @@ function ClienteCom(){
 	this.jugarCarta = function(nombreCarta){
 		this.socket.emit('jugarCarta',this.usrId,this.nombrePartida,nombreCarta);
 	}
+	this.existenObjetivosGrito = function(nombreCarta){
+		this.socket.emit('existenObjetivosGrito',this.usrId,this.nombrePartida,nombreCarta);
+	}
+	//Para cartas con grito
+	this.jugarCartaGritoRival = function(nombreCarta){
+		this.socket.emit('jugarCartaGritoRival',this.usrId,this.nombrePartida,nombreCarta);
+	}
+	this.jugarCartaGritoCartaRival = function(nombreCarta,cartaDestinoGrito){
+		this.socket.emit('jugarCartaGritoCartaRival',this.usrId,this.nombrePartida,nombreCarta,cartaDestinoGrito);
+	}
+	this.jugarCartaGritoCartaJugador = function(nombreCarta,cartaDestinoGrito){
+		this.socket.emit('jugarCartaGritoCartaJugador',this.usrId,this.nombrePartida,nombreCarta,cartaDestinoGrito);
+	}
+	this.jugarCartaGritoJugador = function(nombreCarta){
+		this.socket.emit('jugarCartaGritoJugador',this.usrId,this.nombrePartida,nombreCarta);
+	}
+	//Para hechizos
+	this.lanzarHechizoRival = function(nombreCarta){
+		this.socket.emit('jugarHechizoRival',this.usrId,this.nombrePartida,nombreCarta);
+	}
+	this.lanzarHechizoCartaRival = function(nombreCarta,cartaDestino){
+		this.socket.emit('jugarHechizoCartaRival',this.usrId,this.nombrePartida,nombreCarta,cartaDestino);
+	}
+	this.lanzarHechizoCartaJugador = function(nombreCarta,cartaDestino){
+		this.socket.emit('jugarHechizoCartaJugador',this.usrId,this.nombrePartida,nombreCarta,cartaDestino);
+	}
+	this.lanzarHechizoJugador = function(nombreCarta){
+		this.socket.emit('jugarHechizoJugador',this.usrId,this.nombrePartida,nombreCarta);
+	}
+	this.lanzarHechizoSinObjetivo = function(nombreCarta){
+		this.socket.emit('jugarHechizoSinObjetivo',this.usrId,this.nombrePartida,nombreCarta);
+	}
 	this.pasarTurno=function() {
        this.socket.emit('pasarTurno', this.usrId, this.nombrePartida);
    	}
@@ -50,12 +110,32 @@ function ClienteCom(){
    		this.socket.emit('atacarRival',this.usrId,this.nombrePartida,idCarta1);
    	}
    	this.abandonarPartida=function(){
-   		this.socket.emit('abandonarPartida',this.usrId,this.nombrePartida);
+   		if(this.nombrePartida){
+   			this.socket.emit('abandonarPartida',this.usrId,this.nombrePartida);
+   		}
+   		
    	}
 	this.lanzarSocketSrv=function(){
 		var cli=this;
 		this.socket.on('connect', function(){   						
    			console.log("Usuario conectado al servidor de WebSockets");
+		});
+		this.socket.on('elegido', function(){   			
+			console.log("Usuario elige mazo");
+   			mostrarMenu();
+   			//console.log("Mano: "+mano);
+		});		
+		this.socket.on('noElegido', function(){   			
+			console.log("Algo ha fallado al elegir mazo");
+   			mostrarMenu();
+   			//console.log("Mano: "+mano);
+		});
+		this.socket.on('partidaBuscada', function(nombre){   						
+   			console.log("Partida buscada con nombre "+nombre);
+   			cli.nombrePartida=nombre;
+   			//rest.obtenerPartidas();
+   			mostrarEsperandoRival();
+   			//console.log("Mano: "+mano);
 		});
 		this.socket.on('partidaCreada', function(partidaId){   						
    			console.log("Usuario crea partida con id: "+partidaId);
@@ -80,11 +160,12 @@ function ClienteCom(){
 			cli.obtenerCartasMano();
 			cli.obtenerCartasAtaque();
 			cli.obtenerDatosRival();
+
 		});
 		this.socket.on('mano',function(datos){
 			console.log(datos);
 			mostrarElixir(datos);
-			mostrarMano(datos.mano);
+			mostrarMano(datos.mano,datos.elixir);
 		});
 		this.socket.on("cartasAtaque",function(datos){
 			console.log(datos);
@@ -94,14 +175,28 @@ function ClienteCom(){
 			console.log(datos);
 			mostrarCementerio(datos.cementerio);
 		});
+		this.socket.on('existenObjetivosGrito',function(datos){
+			console.log(datos);
+			//existenObjetivosGrito(datos);
+			//return datos;
+			tieneObjetivosDisponiblesGrito(datos);
+			//cli.tieneObjetivosG=datos;
+			//console.log(cli.tieneObjetivosG);
+
+			//this.tieneObjetivosG=datos;
+			//console.log(this.tieneObjetivosG);
+		});
 		this.socket.on('datosRival',function(datos){
 			console.log(datos);
 			//usr.datosRival=datos;
-			mostrarRival(datos.elixir,datos.vidas);
+			mostrarRival(datos.elixir,datos.vidas,datos.mano,datos.cementerio,datos.elemento,datos.mazo);
 			mostrarAtaqueRival(datos.cartas);
 		});
 		this.socket.on('noJugada', function(carta){ 
 			console.log("El usuario no pudo jugar la carta con coste: "+carta.coste);
+			cli.obtenerCartasMano();
+			cli.obtenerCartasAtaque();
+			cli.obtenerDatosRival();
 		});
 		this.socket.on('juegaCarta', function(datos) { 
 			console.log("Usuario " + datos.usrid + " juega la carta con coste: "+datos.carta.coste+" elixir: "+datos.elixir);
@@ -116,6 +211,9 @@ function ClienteCom(){
 		this.socket.on('pasarTurno', function(datos){
            console.log("El usuario tiene turno: "+datos.turno);
            //cli.meToca();
+           cli.obtenerCartasMano();
+			cli.obtenerCartasAtaque();
+			cli.obtenerDatosRival();
            mostrarElixir(datos);
        	});
        	this.socket.on("respuestaAtaque",function(datos){
@@ -130,6 +228,9 @@ function ClienteCom(){
        		console.log("rival abandona");
        		//mostrarInicio();
        		abandonarPartida();
+       		//limpiar();
+      		//mostrarMenu();
+      		//mostrarNavLogout();
        	});
 	}
 }

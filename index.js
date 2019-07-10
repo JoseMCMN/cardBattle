@@ -42,6 +42,13 @@ app.post('/loginUsuario', function(request,response){
 		response.send(data);
 	});
 });
+/*
+app.post('/logOutUsuario', function(request,response){
+	var email=request.body.email;
+    juego.logOutUsuario(email,function(result){
+        response.send(data);
+    });
+});*/
 
 app.get("/confirmarUsuario/:email/:key",function(request,response){
 	var email=request.params.email;
@@ -94,7 +101,20 @@ app.put("/actualizarUsuario",function(request,response){
     juego.actualizarUsuario(request.body,function(result){
             response.send(result);
         });
-})
+});
+
+app.get("/buscarPartida/:usrid",function(request,response){
+	var usrid=request.params.usrid;
+	//var partida=request.params.nombre;
+	var usr=juego.obtenerUsuario(usrid);
+	var partidaId=-1;
+	var json={"idPartida":-1,"creada":undefined};
+	if (usr){
+		json=usr.buscarPartida();
+		//json=JSON.parse(json);
+	}
+	response.send(json);
+});
 
 app.get("/crearPartida/:usrid/:nombre",function(request,response){
 	var usrid=request.params.usrid;
@@ -107,7 +127,7 @@ app.get("/crearPartida/:usrid/:nombre",function(request,response){
 	response.send({"partidaId":partidaId});
 });
 
-app.get('/obtenerPartidas', function(request, response) {
+/*app.get('/obtenerPartidas', function(request, response) {
 	var json=[];
 	var partidas=juego.obtenerPartidas();
 
@@ -118,8 +138,22 @@ app.get('/obtenerPartidas', function(request, response) {
 		}
 	}
 	response.send(json);
-});
+});*/
+app.get('/obtenerPartidas/:usrid', function(request, response) {
+	var json=[];
+	var usrid=request.params.usrid;
+	var partidas=juego.obtenerPartidas();
 
+	if (partidas.length!=0){
+		for(var i=0;i<partidas.length;i++){
+			var partida=partidas[i];
+			if(partida.usuariosPartida[0].id!=usrid){
+				json.push({"idPartida":partida.id,"nombre":partida.nombre});
+			}
+		}
+	}
+	response.send(json);
+});
 
 app.get("/elegirPartida/:usrid/:nombre",function(request,response){
 	var usrid=request.params.usrid;

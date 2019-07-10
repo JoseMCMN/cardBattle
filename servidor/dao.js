@@ -28,6 +28,8 @@ function Dao(){
         insertar(this.usuarios,usu,callback);
     }
 
+    //Insertar Carta
+
     function insertar(coleccion,usu,callback){
         coleccion.insertOne(usu,function(err,result){
             if(err){
@@ -72,7 +74,7 @@ function Dao(){
 
     this.conectar=function(callback){
         var dao=this;
-        mongo.connect("mongodb:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",{useNewUrlParser:true}, function(err, db) {
+        mongo.connect("mongodb://*****:*********.mlab.com:*****/***",{useNewUrlParser:true}, function(err, db) {
             if (err){
                 console.log("No pudo conectar a la base de datos");
             }

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>CardBattle Game</title>
+  <title>Card Battle Game</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -14,23 +14,27 @@
   <script src="cliente/src/controlWeb.js"></script>  
   <script src="cliente/src/clienteUsuario.js"></script>
 </head>
-<nav class="navbar navbar-inverse">
+
+<nav class="navbar navbar-inverse" id="barraNav" style="background-color: #252525">
       <div class="container">
         <div class="navbar-header">
-          <a class="navbar-brand" href="#" id="ini1" onclick="comprobarUsuario();">Card Battle Game</a>
-        </div>
-        <ul class="nav navbar-nav">
-          <li class="active"><a href="#" id="ini2" onclick="rest.obtenerResultados();">Resultados</a></li>
-          <li><a href="#" id="resul"></a> </li>
-        </ul>
+          <a class="navbar-brand" href="#" id="ini1"  onclick="mostrarMenu();">INICIO</a>
+        </div>  
         <ul class="nav navbar-nav navbar-right" id="inicioNav">
         </ul>
       </div>
 </nav>
 
 <div class="container text-center" id="cabecera">
-  <body background="cliente/img/fondoMenu.png" style="background-repeat: no-repeat; background-position: top center; background-attachment: fixed;">
+  <body background="cliente/img/FondoJuego2.jpg" style=" background-size:1500px 800px; background-repeat: no-repeat; background-position: top center; background-attachment: fixed;">
+    <!--
+    <button type="button" class="btn btn-success btn-lg" href="#" style=" position:center; border-radius: 12px; font-size: 60px; font-weight:bold;" onclick="mostrarInicio()">JUGAR</button>
+  -->
 </div> 
+
+<div class="container text-center" id="subCabecera">
+</div>
+
 <div class="container">
   <div class="row">
     <div class="col-sm-6">
@@ -48,7 +52,7 @@
       </div>
     </div>
     <div class="row">
-      <div id="ataqueRival">
+      <div id="ataqueRival" align="center">
       </div>
     </div>  
     <div class="row">
